@@ -305,7 +305,7 @@ class Language_Switcher_Admin_API {
 
 			case 'default_language_urls':
 
-				if( $options = get_option( $this->parent->_base . 'active_languages' )){
+				if( $options = $this->parent->get_active_languages() ){
 
 					$languages = $this->parent->get_languages();
 					

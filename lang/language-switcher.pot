@@ -1,0 +1,282 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Language Switcher\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-07-19 07:39+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/"
+
+#: includes/lib/class-language-switcher-post-type.php:154
+#, php-format
+msgid "%1$s %2$s moved to the Trash."
+msgid_plural "%1$s %3$s moved to the Trash."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/lib/class-language-switcher-post-type.php:152
+#, php-format
+msgid "%1$s %2$s not updated, somebody is editing it."
+msgid_plural "%1$s %3$s not updated, somebody is editing them."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/lib/class-language-switcher-post-type.php:153
+#, php-format
+msgid "%1$s %2$s permanently deleted."
+msgid_plural "%1$s %3$s permanently deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/lib/class-language-switcher-post-type.php:155
+#, php-format
+msgid "%1$s %2$s restored from the Trash."
+msgid_plural "%1$s %3$s restored from the Trash."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/lib/class-language-switcher-post-type.php:151
+#, php-format
+msgid "%1$s %2$s updated."
+msgid_plural "%1$s %3$s updated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/lib/class-language-switcher-post-type.php:136
+#, php-format
+msgid "%1$s draft updated. %2$sPreview %3$s%4$s."
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:132
+#, php-format
+msgid "%1$s published. %2$sView %3$s%4s."
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:131
+#, php-format
+msgid "%1$s restored to revision from %2$s."
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:133
+#, php-format
+msgid "%1$s saved."
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:135
+#, php-format
+msgid "%1$s scheduled for: %2$s. %3$sPreview %4$s%5$s."
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:134
+#, php-format
+msgid "%1$s submitted. %2$sPreview post%3$s%4$s."
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:130
+#, php-format
+msgid "%1$s updated."
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:127
+#, php-format
+msgid "%1$s updated. %2$sView %3$s%4$s."
+msgstr ""
+
+#. Description of the plugin
+msgid "Add a Language Switcher to Post Types and Taxonomies"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:76
+msgid "Add New"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:77
+#: includes/lib/class-language-switcher-taxonomy.php:79
+#, php-format
+msgid "Add New %s"
+msgstr ""
+
+#: includes/lib/class-language-switcher-taxonomy.php:86
+#, php-format
+msgid "Add or remove %s"
+msgstr ""
+
+#: includes/class-language-switcher-settings.php:128
+#: includes/class-language-switcher-settings.php:189
+msgid "Addons"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:80
+#: includes/lib/class-language-switcher-taxonomy.php:75
+#, php-format
+msgid "All %s"
+msgstr ""
+
+#: includes/widgets/class-language-switcher-widget.php:94
+msgid "Button"
+msgstr ""
+
+#: includes/lib/class-language-switcher-taxonomy.php:87
+#, php-format
+msgid "Choose from the most used %s"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:129
+msgid "Custom field deleted."
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:128
+msgid "Custom field updated."
+msgstr ""
+
+#: includes/class-language-switcher-settings.php:180
+msgid "Default URLs"
+msgstr ""
+
+#: includes/widgets/class-language-switcher-widget.php:83
+#: includes/widgets/class-language-switcher-widget.php:90
+msgid "Display"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:78
+#: includes/lib/class-language-switcher-taxonomy.php:76
+#, php-format
+msgid "Edit %s"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://code.recuweb.com/about-us/"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://code.recuweb.com/download/language-switcher/"
+msgstr ""
+
+#: includes/class-language-switcher.php:1017
+msgid "Language"
+msgstr ""
+
+#. Name of the plugin
+#: includes/widgets/class-language-switcher-widget.php:15
+msgid "Language Switcher"
+msgstr ""
+
+#: includes/class-language-switcher.php:572
+#: includes/class-language-switcher-settings.php:141
+#: includes/class-language-switcher-settings.php:146
+msgid "Languages"
+msgstr ""
+
+#: includes/widgets/class-language-switcher-widget.php:94
+msgid "List"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:135
+msgid "M j, Y @ G:i"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:79
+#, php-format
+msgid "New %s"
+msgstr ""
+
+#: includes/lib/class-language-switcher-taxonomy.php:80
+#, php-format
+msgid "New %s Name"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:83
+#, php-format
+msgid "No %s Found"
+msgstr ""
+
+#: includes/lib/class-language-switcher-taxonomy.php:88
+#, php-format
+msgid "No %s found"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:84
+#, php-format
+msgid "No %s Found In Trash"
+msgstr ""
+
+#: includes/lib/class-language-switcher-taxonomy.php:81
+#, php-format
+msgid "Parent %s"
+msgstr ""
+
+#: includes/lib/class-language-switcher-taxonomy.php:82
+#, php-format
+msgid "Parent %s:"
+msgstr ""
+
+#: includes/lib/class-language-switcher-taxonomy.php:84
+#, php-format
+msgid "Popular %s"
+msgstr ""
+
+#: includes/class-language-switcher-settings.php:162
+msgid "Post Types"
+msgstr ""
+
+#. Author of the plugin
+msgid "Rafasashi"
+msgstr ""
+
+#: includes/lib/class-language-switcher-admin-api.php:436
+msgid "Remove image"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:82
+#: includes/lib/class-language-switcher-taxonomy.php:83
+#, php-format
+msgid "Search %s"
+msgstr ""
+
+#: includes/lib/class-language-switcher-taxonomy.php:85
+#, php-format
+msgid "Separate %s with commas"
+msgstr ""
+
+#: includes/class-language-switcher-settings.php:125
+#: includes/class-language-switcher-settings.php:157
+msgid "Settings"
+msgstr ""
+
+#: includes/class-language-switcher-settings.php:171
+msgid "Taxonomies"
+msgstr ""
+
+#: includes/widgets/class-language-switcher-widget.php:62
+msgid "Title"
+msgstr ""
+
+#: includes/lib/class-language-switcher-taxonomy.php:78
+#, php-format
+msgid "Update %s"
+msgstr ""
+
+#: includes/lib/class-language-switcher-admin-api.php:435
+msgid "Upload an image"
+msgstr ""
+
+#: includes/lib/class-language-switcher-admin-api.php:435
+msgid "Upload new image"
+msgstr ""
+
+#: includes/lib/class-language-switcher-admin-api.php:435
+msgid "Use image"
+msgstr ""
+
+#: includes/lib/class-language-switcher-post-type.php:81
+#: includes/lib/class-language-switcher-taxonomy.php:77
+#, php-format
+msgid "View %s"
+msgstr ""

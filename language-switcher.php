@@ -9,7 +9,7 @@
  * Requires at least: 4.6
  * Tested up to: 4.9.6
  *
- * Text Domain: language_switcher
+ * Text Domain: language-switcher
  * Domain Path: /lang/
  * 
  * Copyright: © 2018 Recuweb.

@@ -288,13 +288,16 @@ class Language_Switcher {
 							
 							$this->language['urls'][$iso] = home_url( $url );
 						}
-						elseif( strpos($url,'.') === FALSE ){
+						elseif( !empty($url) ){
 							
-							$this->language['urls'][$iso] = $current_url . '/' . $url;
-						}
-						elseif( !preg_match("~^(?:f|ht)tps?://~i", $url) ){
-							
-							$this->language['urls'][$iso] = $proto . $url;
+							if( strpos($url,'.') === FALSE ){
+								
+								$this->language['urls'][$iso] = $current_url . '/' . $url;
+							}
+							elseif( !preg_match("~^(?:f|ht)tps?://~i", $url) ){
+								
+								$this->language['urls'][$iso] = $proto . $url;
+							}
 						}
 					}
 				}
@@ -327,7 +330,7 @@ class Language_Switcher {
 						
 					wp_redirect( $this->language['urls'][$main_lang] );
 					exit;						
-				}				
+				}			
 				else{
 					
 					// switch locale
@@ -337,7 +340,7 @@ class Language_Switcher {
 			}
 		}
 	}
-
+	
 	public function query_language_posts( $query ){
 		
 		$language = '';
@@ -408,7 +411,7 @@ class Language_Switcher {
 						'value' 	=> $language['main'],
 						'compare' 	=> 'LIKE',
 					),
-				));				
+				));
 			}
 		}
 
