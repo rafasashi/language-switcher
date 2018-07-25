@@ -331,7 +331,7 @@ class Language_Switcher_Admin_API {
 				
 			break;
 			
-			case 'language_switcher':
+			case 'language_switcher_with_url':
 				
 				if( $active_languages = $this->parent->get_active_languages() ){
 
@@ -350,7 +350,68 @@ class Language_Switcher_Admin_API {
 					if( !isset($data['main']) ){
 						
 						$data['main'] = $default;
-					}					
+					}
+
+					$languages = $this->parent->get_languages();
+					
+					$html .= '<div class="language-switcher">';
+						
+						foreach( $languages as $iso => $language ){
+							
+							if( in_array($iso,$active_languages) ){
+								
+								$value = '';
+								
+								if( $data['main'] == $iso ){
+									
+									$value = 'default';
+								}
+								elseif( isset($data['urls'][$iso]) ){
+									
+									$value = $data['urls'][$iso];
+								}
+								
+								$html .= '<div style="margin-bottom:10px;">';
+									
+									$html .= '<input id="' . esc_attr( $field['id'] ) . '_main_' . $iso . '" class="' . esc_attr( $field['id'] ) . '_main" type="radio" name="' . esc_attr( $option_name ) . '[main]" value="' . $iso . '"' . ( $data['main'] == $iso ? ' checked="checked"' : '' ) . ' />' . "\n";										
+									
+									$html .= '<div style="margin-bottom:2px;width:90%;display: inline-block;">' . $language . '</div>';
+
+									$html .= '<input style="width:90%;margin-left:25px;" id="' . esc_attr( $field['id'] ) . '_url_' . $iso . '" type="text" name="' . esc_attr( $option_name ) . '[urls]['.$iso.']" placeholder="http://" value="' . $value . '"'.( $data['main'] == $iso ? ' disabled="disabled"' : '' ).'/>' . "\n";
+
+								$html .= '</div>';
+							}
+						}
+						
+					$html .= '</div>';
+				}
+				else{
+					
+					$html .= 'No language activated';
+				}
+				
+			break;
+			
+			case 'language_switcher_without_url':
+				
+				if( $active_languages = $this->parent->get_active_languages() ){
+
+					if( !is_array($data) ){
+						
+						$data = array();
+					}
+				
+					if( !isset($data['urls']) ){
+						
+						$data['urls'] = array();
+					}
+
+					$default = substr( get_bloginfo ( 'language' ), 0, 2 );
+					
+					if( !isset($data['main']) ){
+						
+						$data['main'] = $default;
+					}
 					
 					$languages = $this->parent->get_languages();
 					
@@ -372,12 +433,12 @@ class Language_Switcher_Admin_API {
 								}
 								
 								$html .= '<div style="margin-bottom:10px;">';
-								
-									$html .= '<div style="margin-bottom:2px;">' . $language . '</div>';
 									
-									$html .= '<input id="' . esc_attr( $field['id'] ) . '_main_' . $iso . '" class="' . esc_attr( $field['id'] ) . '_main" type="radio" name="' . esc_attr( $option_name ) . '[main]" value="' . $iso . '"' . ( $data['main'] == $iso ? ' checked="checked"' : '' ) . ' />' . "\n";
+									$html .= '<input id="' . esc_attr( $field['id'] ) . '_main_' . $iso . '" class="' . esc_attr( $field['id'] ) . '_main" type="radio" name="' . esc_attr( $option_name ) . '[main]" value="' . $iso . '"' . ( $data['main'] == $iso ? ' checked="checked"' : '' ) . ' />' . "\n";										
 									
-									$html .= '<input style="width:85%;" id="' . esc_attr( $field['id'] ) . '_url_' . $iso . '" type="text" name="' . esc_attr( $option_name ) . '[urls]['.$iso.']" placeholder="http://" value="' . $value . '"'.( $data['main'] == $iso ? ' disabled="disabled"' : '' ).'/>' . "\n";
+									$html .= '<div style="margin-bottom:2px;width:90%;display: inline-block;">' . $language . '</div>';
+										
+									$html .= '<input id="' . esc_attr( $field['id'] ) . '_url_' . $iso . '" type="hidden" name="' . esc_attr( $option_name ) . '[urls]['.$iso.']" ' . $value . '" />' . "\n";
 									
 								$html .= '</div>';
 							}

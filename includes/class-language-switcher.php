@@ -98,13 +98,21 @@ class Language_Switcher {
 	public $labels;
 	public $post_types;
 	public $taxonomies;
+	
 	public $language;
 	public $languages;
+	
 	public $active_post_types;
 	public $active_taxonomies;
 	public $active_languages;
-	public $everywhere;
+	
 	public $switchers = array();
+	
+	// addons
+	
+	public $everywhere;
+	public $synchronizer;
+	public $importer;
 	 
 	public function __construct ( $file = '', $version = '1.0.0' ) {
 	
@@ -203,6 +211,60 @@ class Language_Switcher {
 		register_widget($widget);
 	}
 	
+	public function normalize_url($url,$current_url) {
+		
+		$proto = ( is_ssl() ? 'https://' : 'http://' );	
+
+		if( $url[0] == '/' ){
+
+			$url = home_url( $url );
+		}
+		elseif( strpos($url,'.') === FALSE ){
+			
+			$url = $current_url . '/' . $url;
+		}
+		elseif( !preg_match('´^(?:f|ht)tps?:\/\/´i', $url) ){
+			
+			$url = $proto . $url;
+		}
+		
+		return $url;
+	}
+	
+	public function get_post_language($post_id){
+		
+		$language = get_post_meta( $post_id, 'language_switcher' ,true );
+	
+		if( !isset($language['urls']) ){
+			
+			$language['urls'] = array();
+		}
+	
+		if( empty($language['main']) ){
+			
+			$language['main'] = get_option( $this->_base . 'default_language_urls' );
+		}
+		
+		return $language;
+	}
+	
+	public function get_term_language($term_id){
+		
+		$language = get_term_meta( $term_id, 'language_switcher' ,true );
+	
+		if( !isset($language['urls']) ){
+			
+			$language['urls'] = array();
+		}
+	
+		if( empty($language['main']) ){
+			
+			$language['main'] = get_option( $this->_base . 'default_language_urls' );
+		}
+		
+		return $language;
+	}
+	
 	public function get_current_language(){
 		
 		if( empty($this->language) ){
@@ -276,32 +338,17 @@ class Language_Switcher {
 				
 				$current_url = home_url( $_SERVER['REQUEST_URI'] );
 				
-				//normalize urls
-				
-				$proto = ( is_ssl() ? 'https://' : 'http://' );
-				
 				if( !empty($this->language['urls']) ){
 				
 					foreach( $this->language['urls'] as $iso => $url ){
 						
-						if( $url[0] == '/' ){
+						if( !empty($url) ){
 							
-							$this->language['urls'][$iso] = home_url( $url );
-						}
-						elseif( !empty($url) ){
-							
-							if( strpos($url,'.') === FALSE ){
-								
-								$this->language['urls'][$iso] = $current_url . '/' . $url;
-							}
-							elseif( !preg_match("~^(?:f|ht)tps?://~i", $url) ){
-								
-								$this->language['urls'][$iso] = $proto . $url;
-							}
+							$this->language['urls'][$iso] = $this->normalize_url($url,$current_url);
 						}
 					}
 				}
-				
+
 				//set cookies & switch language
 				
 				if( !isset($_COOKIE[$this->_base . 'main_language']) || $_COOKIE[$this->_base . 'main_language'] != $this->language['main'] || !isset($_COOKIE[$this->_base . 'default_language']) || $_COOKIE[$this->_base . 'default_language'] != $this->language['default'] ) {
@@ -417,7 +464,7 @@ class Language_Switcher {
 
 		return $query;
 	}
-	
+		
 	public function query_language_taxonomies( $args, $taxonomies ){
 
 		$language = '';
@@ -576,7 +623,7 @@ class Language_Switcher {
 					}
 				});
 				
-				add_filter( $post_type . '_custom_fields', array( $this, 'add_language_switcher_post_type_field' ));
+				add_filter( $post_type . '_custom_fields', array( $this, get_post_type_object( $post_type )->public ? 'add_post_type_language_switcher_with_url' : 'add_post_type_language_switcher_without_url' ));
 			
 				add_action( 'save_post_' . $post_type, array( $this, 'save_language_post_type' ), 10, 3 );
 			
@@ -717,7 +764,7 @@ class Language_Switcher {
 				
 				echo $this->admin->display_field( array(
 				
-					'type'				=> 'language_switcher',
+					'type'				=> get_taxonomy( $term->taxonomy )->public ? 'language_switcher_with_url' : 'language_switcher_without_url',
 					'id'				=> 'language_switcher',
 					'name'				=> 'language_switcher',
 					'placeholder'		=> 'add new languages',
@@ -813,7 +860,7 @@ class Language_Switcher {
 				
 				if( $data['type'] == 'living' && $data['scope'] == 'individual' ){
 					
-					$this->languages[$data['iso_639_1']] = '<span style="font-weight:initial;background: #888;color: #fff;padding: 2px 4px;border-radius: 3px;">' . ucfirst($data['iso_639_1']) . '</span> ' . ucfirst( $data['name'] ) . ' <i style="font-size:60%;">(' . $data['native'] . ')</i>';
+					$this->languages[$data['iso_639_1']] = '<span style="font-weight:initial;background: #888;color: #fff;padding: 2px 4px;border-radius: 3px;">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span> ' . ucfirst( $data['name'] ) . ' <i style="font-size:60%;">(' . $data['native'] . ')</i>';
 				} 
 			}
 			
@@ -937,13 +984,28 @@ class Language_Switcher {
 		return false;
 	}	
 	
-	public function add_language_switcher_post_type_field($fields){
+	public function add_post_type_language_switcher_with_url($fields){
 		
 		$fields[]=array(
 		
 			"metabox" =>
 				array('name'=> "language_switcher"),
-				'type'				=> 'language_switcher',
+				'type'				=> 'language_switcher_with_url',
+				'id'				=> 'language_switcher',
+				//'default'			=> get_permalink($_REQUEST['post']),
+				'description'		=> '',
+		);
+		
+		return $fields;	
+	}
+	
+	public function add_post_type_language_switcher_without_url($fields){
+		
+		$fields[]=array(
+		
+			"metabox" =>
+				array('name'=> "language_switcher"),
+				'type'				=> 'language_switcher_without_url',
 				'id'				=> 'language_switcher',
 				//'default'			=> get_permalink($_REQUEST['post']),
 				'description'		=> '',
@@ -962,15 +1024,19 @@ class Language_Switcher {
 		if( isset($_REQUEST['language_switcher']['main']) ){
 		
 			update_term_meta($term_id,$this->_base . 'main_language',$_REQUEST['language_switcher']['main']);
-		}	
+		}
+		
+		do_action('lsw_taxonomy_edited',$term_id);
 	}	
 	
-	public function save_language_post_type( $post_id, $post, $update ) {
+	public function save_language_post_type( $post_id ) {
 		
 		if( isset($_REQUEST['language_switcher']['main']) ){
 
 			update_post_meta($post_id,$this->_base . 'main_language',$_REQUEST['language_switcher']['main']);
 		}
+		
+		do_action('lsw_post_type_edited',$post_id);
 	}
 	
 	public function get_language_switcher( $display = 'button' ){
@@ -1213,7 +1279,7 @@ class Language_Switcher {
 		
 		return self::$_instance;
 	} // End instance ()
-
+	
 	/**
 	 * Cloning is forbidden.
 	 *
@@ -1252,4 +1318,3 @@ class Language_Switcher {
 		update_option( $this->_token . '_version', $this->_version );
 	} // End _log_version_number ()
 }
-
