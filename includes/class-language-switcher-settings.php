@@ -427,7 +427,7 @@ class Language_Switcher_Settings {
 					
 						if ( !empty($field['args']['label_for']) ){
 							
-							echo '<label style="font-weight:bold;" for="' . $field['args']['label_for'] . '">' . $field['title'] . '</label>';
+							echo '<label class="lsw-active" for="' . $field['args']['label_for'] . '">' . $field['title'] . '</label>';
 						}
 						else{
 							

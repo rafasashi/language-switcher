@@ -233,18 +233,57 @@ class Language_Switcher {
 	
 	public function get_post_language($post_id){
 		
-		$language = get_post_meta( $post_id, 'language_switcher' ,true );
-	
+		$language = get_post_meta( $post_id, $this->_base . 'language_switcher' ,true );
+
 		if( !isset($language['urls']) ){
 			
 			$language['urls'] = array();
 		}
-	
+
+		if( !isset($language['main']) ){
+			
+			$language['main'] = get_post_meta( $post_id, $this->_base . 'main_language' ,true );
+		}
+
 		if( empty($language['main']) ){
 			
-			$language['main'] = get_option( $this->_base . 'default_language_urls' );
+			$parent_id  = wp_get_post_parent_id( $post_id );
+			
+			while( $parent_id && $parent_id > 0 ){
+			
+				$parent_language = get_post_meta( $parent_id, $this->_base . 'language_switcher' ,true );
+				
+				if( !isset($parent_language['main']) ){
+					
+					$parent_language['main'] = get_post_meta( $parent_id, $this->_base . 'main_language' ,true );
+				}				
+				
+				if( !empty($parent_language['main']) ){
+					
+					$language['main'] = $parent_language['main'];
+					
+					break;
+				}
+				else{
+					
+					$parent_id  = wp_get_post_parent_id( $parent_id );
+				}
+			}
+
+			if( !empty($language['main']) ){
+				
+				//update post language
+				
+				update_post_meta( $post_id, $this->_base . 'language_switcher', $language);
+				
+				update_post_meta( $post_id, $this->_base . 'main_language', $language['main']);
+			}
+			else{
+			
+				$language['main'] = get_option( $this->_base . 'default_language' );
+			}			
 		}
-		
+
 		return $language;
 	}
 	
@@ -259,7 +298,7 @@ class Language_Switcher {
 	
 		if( empty($language['main']) ){
 			
-			$language['main'] = get_option( $this->_base . 'default_language_urls' );
+			$language['main'] = get_option( $this->_base . 'default_language' );
 		}
 		
 		return $language;
@@ -274,13 +313,8 @@ class Language_Switcher {
 			$default_urls = get_option( $this->_base . 'default_language_urls' );
 
 			if( is_singular() ){
-
-				$this->language = get_post_meta( get_queried_object_id(), 'language_switcher' ,true );
 				
-				if( empty($this->language['main']) ){
-					
-					$this->language['main'] = $default_lang;
-				}
+				$this->language = $this->get_post_language( get_queried_object_id() );
 			}
 			elseif( is_category() || is_tag() || is_tax() ){
 				
@@ -546,7 +580,7 @@ class Language_Switcher {
 				
 				if( $item->type == 'post_type' ){
 					
-					$language = get_post_meta( $item->object_id, 'language_switcher' ,true );
+					$language = $this->get_post_language($item->object_id);
 				}
 				elseif( $item->type == 'taxonomy' ){
 					
@@ -860,7 +894,7 @@ class Language_Switcher {
 				
 				if( $data['type'] == 'living' && $data['scope'] == 'individual' ){
 					
-					$this->languages[$data['iso_639_1']] = '<span style="font-weight:initial;background: #888;color: #fff;padding: 2px 4px;border-radius: 3px;">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span> ' . ucfirst( $data['name'] ) . ' <i style="font-size:60%;">(' . $data['native'] . ')</i>';
+					$this->languages[$data['iso_639_1']] = '<span class="lsw-iso">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span> <span class="lsw-language">' . ucfirst( $data['name'] ) . '</span> <i class="lsw-native">(' . $data['native'] . ')</i>';
 				} 
 			}
 			
@@ -993,6 +1027,7 @@ class Language_Switcher {
 				'type'				=> 'language_switcher_with_url',
 				'id'				=> 'language_switcher',
 				//'default'			=> get_permalink($_REQUEST['post']),
+				'data'				=> $this->get_post_language( $_REQUEST['post'] ),
 				'description'		=> '',
 		);
 		
@@ -1008,6 +1043,7 @@ class Language_Switcher {
 				'type'				=> 'language_switcher_without_url',
 				'id'				=> 'language_switcher',
 				//'default'			=> get_permalink($_REQUEST['post']),
+				'data'				=> $this->get_post_language( $_REQUEST['post'] ),
 				'description'		=> '',
 		);
 		
@@ -1030,6 +1066,11 @@ class Language_Switcher {
 	}	
 	
 	public function save_language_post_type( $post_id ) {
+		
+		if( isset($_REQUEST['language_switcher']) ){
+
+			update_post_meta($post_id,$this->_base . 'language_switcher',$_REQUEST['language_switcher']);
+		}
 		
 		if( isset($_REQUEST['language_switcher']['main']) ){
 
@@ -1098,7 +1139,7 @@ class Language_Switcher {
 				
 					foreach( $urls as $iso => $data ){
 
-						echo '<li'.( $this->language['main'] == $iso ? ' style="font-weight:bold;"' : '' ).'><a href="'.$data['url'].'">'.$data['language'].'</a></li>';
+						echo '<li'.( $this->language['main'] == $iso ? ' class="lsw-active"' : '' ).'><a href="'.$data['url'].'">'.$data['language'].'</a></li>';
 
 					}
 					
@@ -1118,7 +1159,7 @@ class Language_Switcher {
 				
 					foreach( $urls as $iso => $data ){
 
-						$this->switchers[$id] .= '<li'.( $this->language['main'] == $iso ? ' style="font-weight:bold;"' : '' ).'><a href="'.$data['url'].'">'.$data['language'].'</a></li>';
+						$this->switchers[$id] .= '<li'.( $this->language['main'] == $iso ? ' class="lsw-active"' : '' ).'><a href="'.$data['url'].'">'.$data['language'].'</a></li>';
 						
 						//echo'<li class="jq-dropdown-divider"></li>';
 					}
@@ -1182,8 +1223,8 @@ class Language_Switcher {
 	 */
 	public function enqueue_styles () {
 		
-		//wp_register_style( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'css/frontend-1.0.1.css', array(), $this->_version );
-		//wp_enqueue_style( $this->_token . '-frontend' );		
+		wp_register_style( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'css/frontend-1.0.1.css', array(), $this->_version );
+		wp_enqueue_style( $this->_token . '-frontend' );		
 
 		wp_register_style( $this->_token . '-dropdown', esc_url( $this->assets_url ) . 'css/jquery.dropdown.css', array(), $this->_version );
 		wp_enqueue_style( $this->_token . '-dropdown' );	

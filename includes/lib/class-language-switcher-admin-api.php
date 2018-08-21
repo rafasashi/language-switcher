@@ -37,19 +37,8 @@ class Language_Switcher_Admin_API {
 
 		// Get saved data
 		$data = '';
-		if ( $post ) {
-
-			// Get saved field data
-			$option_name .= $field['id'];
-			$option = get_post_meta( $post->ID, $field['id'], true );
-
-			// Get data to display in field
-			if ( isset( $option ) ) {
-				$data = $option;
-			}
-
-		}
-		elseif( isset($field['data']) ) {
+		
+		if( isset($field['data']) ) {
 		
 			if( isset($field['name']) ) {
 			
@@ -61,6 +50,18 @@ class Language_Switcher_Admin_API {
 			}
 			
 			$data = $field['data'];
+		}
+		elseif ( $post ) {
+
+			// Get saved field data
+			$option_name .= $field['id'];
+			$option = get_post_meta( $post->ID, $field['id'], true );
+
+			// Get data to display in field
+			if ( isset( $option ) ) {
+				
+				$data = $option;
+			}
 		}
 		else {
 
@@ -345,11 +346,11 @@ class Language_Switcher_Admin_API {
 						$data['urls'] = array();
 					}
 
-					$default = substr( get_bloginfo ( 'language' ), 0, 2 );
+					
 					
 					if( !isset($data['main']) ){
 						
-						$data['main'] = $default;
+						$data['main'] = substr( get_bloginfo ( 'language' ), 0, 2 );
 					}
 
 					$languages = $this->parent->get_languages();

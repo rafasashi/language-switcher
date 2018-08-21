@@ -57,6 +57,22 @@
     background: #e6e6e6;
 }
 
+.lsw-active{
+	font-weight:bold;
+}
+
+.lsw-iso{
+	font-weight:initial;
+	background: #888;
+	color: #fff;
+	padding: 2px 4px;
+	border-radius: 3px;
+}
+
+.lsw-native{
+	font-size:60%;
+}
+
 /* buttons */
 /*
 .wp-core-ui .button-success{color:#fff;background-color:#84da97;border-color:transparent}
