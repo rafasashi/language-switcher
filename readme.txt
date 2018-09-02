@@ -1,31 +1,35 @@
 === Language Switcher ===
 Contributors: rafasashi
 Tags: LANGUAGE, languages, checklist, LANGUAGE list, project management, LANGUAGE list
-Donate link: https://code.recuweb.com/download/language-switcher/
+Donate link: https://code.recuweb.com/get/language-switcher/
 Requires at least: 4.6
 Tested up to: 4.9.6
 Stable tag: 3.0.0
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
-Add a Language Switcher to Post Types and Taxonomies, create Tasks lists and monitor the list of Tasks.
+Add a Language Switcher to Post Types and Taxonomies.
 
 == Description ==
 
-Language Switcher allow you to add languages to Post Types and Taxonomies, create Tasks lists and monitor the list of Tasks.
+Language Switcher allows you to map urls of alternative languages for Post Types and Taxonomies. Additionally it allows you to filter archive pages by language.
 
 = Free Features =
 
-– ADD IN POST TYPES – Add LANGUAGE custom field in Post, Page and Attribute
-– ADD IN TAXONOMIES – Add LANGUAGE custom field in post category and post tag
-– LANGUAGE LISTS – Create unlimited list of languages
-– ALL TASKS – Monitor and filter all your languages
+– STANDALONE - No Wordpress Multisite required
+– MIXED SOURCES - map internal or external urls
+– POST TYPE LANGUAGE - Add a main language selector to post types and map urls of alternative languages
+– TAXONOMY LANGUAGE  - Add a main language selector to terms and map urls of alternative languages
+– MENU LANGUAGE - Add a main language selector to the menu settings and switch the menu accordingly
+– LANGUAGE FILTERS - Filter items by language in the main WP_Query of archive pages
+– LANGUAGE WIDGET - Add the language switcher with the widget
+– LANGUAGE SHORTCODE - Add the language switcher anywhere with the shortcode [language-switcher]
 
 = Addon Features =
  
-– LANGUAGE EVERYWHERE – Add LANGUAGE language in custom post types and taxonomies such as WooCommerce Product, Order, Category and Tags
+– LANGUAGE EVERYWHERE –  Enable language switcher for custom post types and taxonomies such as WooCommerce Product, Order, Category and Tags
  
-More information about [Language Switcher](https://code.recuweb.com/download/language-switcher/)
+More information about [Language Switcher](https://code.recuweb.com/get/language-switcher/)
 
 = Localization =
 
@@ -33,7 +37,7 @@ More information about [Language Switcher](https://code.recuweb.com/download/lan
 
 = Documentation =
 
-For all documentation on this plugin go to: [https://code.recuweb.com/download/language-switcher/](https://code.recuweb.com/download/language-switcher/)
+For all documentation on this plugin go to: [https://code.recuweb.com/get/language-switcher/](https://code.recuweb.com/download/language-switcher/)
 
 == Installation ==
 
@@ -61,14 +65,15 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 
 == Screenshots ==
 
-1. Select Post Types and Taxonomies including the LANGUAGE custom field
-2. Create a LANGUAGE list and add languages
-3. Add language to a Page
-4. Add language to a category
-5. Monitor and filter all languages
+1. The language switcher
+2. Edit post type language
+3. Edit tag language
+4. Select activate languages
+5. Select activate post types and taxonomies
+6. Add the language switcher with the widget
 
 == Changelog ==
 
-= 3.0.0 - 28/6/2018 =
+= 3.0.0 - 2/9/2018 =
 
 * Publicaly Released.

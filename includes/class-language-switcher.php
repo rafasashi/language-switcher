@@ -223,7 +223,7 @@ class Language_Switcher {
 			
 			$url = $current_url . '/' . $url;
 		}
-		elseif( !preg_match('´^(?:f|ht)tps?:\/\/´i', $url) ){
+		elseif( !preg_match('#^(?:f|ht)tps?:\/\/#i', $url) ){
 			
 			$url = $proto . $url;
 		}
@@ -305,16 +305,21 @@ class Language_Switcher {
 	}
 	
 	public function get_current_language(){
-		
+
 		if( empty($this->language) ){
 		
 			$default_lang = substr( get_bloginfo ( 'language' ), 0, 2 );
-			
+
 			$default_urls = get_option( $this->_base . 'default_language_urls' );
 
 			if( is_singular() ){
 				
 				$this->language = $this->get_post_language( get_queried_object_id() );
+
+				if( empty($this->language['main']) ){
+					
+					$this->language['main'] = $default_lang;
+				}
 			}
 			elseif( is_category() || is_tag() || is_tax() ){
 				
@@ -357,16 +362,16 @@ class Language_Switcher {
 					'main' => $default_lang,
 				);
 			}
+			
+			//set default language
+				
+			$this->language['default'] = $default_lang;
 
 			if( !empty($this->language['main']) ){
 				
 				// get main language
 				
 				$main_lang = $this->language['main'];
-			
-				//set default language
-				
-				$this->language['default'] = $default_lang;
 				
 				//get current url
 				
@@ -385,13 +390,14 @@ class Language_Switcher {
 
 				//set cookies & switch language
 				
-				if( !isset($_COOKIE[$this->_base . 'main_language']) || $_COOKIE[$this->_base . 'main_language'] != $this->language['main'] || !isset($_COOKIE[$this->_base . 'default_language']) || $_COOKIE[$this->_base . 'default_language'] != $this->language['default'] ) {
+				if( !isset($_COOKIE[$this->_base . 'main_lang']) || $_COOKIE[$this->_base . 'main_lang'] != $this->language['main'] || !isset($_COOKIE[$this->_base . 'default_lang']) || $_COOKIE[$this->_base . 'default_lang'] != $this->language['default'] ) {
 					
 					//set cookies
 					
-					setcookie($this->_base . 'main_language', $this->language['main'], strtotime('+1 day'));
-					setcookie($this->_base . 'default_language', $this->language['default'], strtotime('+1 day'));
-
+					setcookie($this->_base . 'main_lang', $this->language['main'], 0, '/');
+					
+					setcookie($this->_base . 'default_lang', $this->language['default'], 0, '/');
+					
 					// redirect language url
 					
 					if( $default_lang != $main_lang && !empty($this->language['urls'][$main_lang]) && $current_url != $this->language['urls'][$main_lang] ){
@@ -399,7 +405,11 @@ class Language_Switcher {
 						wp_redirect( $this->language['urls'][$main_lang] );
 						exit;						
 					}						
-					else{
+					elseif( !isset($_COOKIE[$this->_base . 'redirect']) || $_COOKIE[$this->_base . 'redirect'] != $current_url ){
+						
+						setcookie($this->_base . 'redirect',$current_url, 0, '/');
+
+						//var_dump($_COOKIE);exit;
 						
 						wp_redirect( $current_url );
 						exit;
@@ -412,7 +422,7 @@ class Language_Switcher {
 					wp_redirect( $this->language['urls'][$main_lang] );
 					exit;						
 				}			
-				else{
+				elseif( !empty( $this->language['main'] ) ){
 					
 					// switch locale
 
@@ -424,75 +434,85 @@ class Language_Switcher {
 	
 	public function query_language_posts( $query ){
 		
-		$language = '';
+		$has_language = true;
 		
-		$default_lang = substr( get_bloginfo ( 'language' ), 0, 2 );
-		
-		if( $query->is_main_query() ){
+		if( isset($query->query['post_type']) && !in_array($query->query['post_type'],$this->get_active_post_types()) ){
 			
-			if( $query->is_category() || $query->is_tag() || $query->is_tax() ){
+			$has_language = false;
+		}
+		
+		if($has_language){
+			
+			$language = '';
+			
+			$default_lang = substr( get_bloginfo ( 'language' ), 0, 2 );
+			
+			if( $query->is_main_query() ){
 				
-				$queried 	= get_queried_object();
-				
-				if( !empty($queried->term_id) ){
+				if( $query->is_category() || $query->is_tag() || $query->is_tax() ){
 					
-					$language 	= get_term_meta( $queried->term_id, 'language_switcher' ,true );
-			
+					$queried 	= get_queried_object();
+					
+					if( !empty($queried->term_id) ){
+						
+						$language 	= get_term_meta( $queried->term_id, 'language_switcher' ,true );
+				
+						$language['default'] = $default_lang;
+					}
+				}
+				elseif( $query->is_archive() || is_home() ){
+					
+					//date archive
+					
+					if( !empty($_REQUEST['lang']) ){
+						
+						$language['main'] = sanitize_title($_REQUEST['lang']);
+					}
+					else{
+						
+						$language['main'] = $default_lang;
+					}
+					
 					$language['default'] = $default_lang;
 				}
 			}
-			elseif( $query->is_archive() || is_home() ){
+			elseif( !empty($_COOKIE[$this->_base . 'main_lang']) ){
 				
-				//date archive
+				if( !isset($query->query['post_type']) || $query->query['post_type'] != 'nav_menu_item' ){
 				
-				if( !empty($_REQUEST['lang']) ){
-					
-					$language['main'] = sanitize_title($_REQUEST['lang']);
+					$language['main'] 		= $_COOKIE[$this->_base . 'main_lang'];
+					$language['default'] 	= $_COOKIE[$this->_base . 'default_lang'];
+				}
+			}
+			
+			if( !empty($language['main']) ){
+				
+				if( $language['main'] == $language['default'] ){
+
+					$query->set( 'meta_query', array(
+						'relation'		=> 'OR',
+						array(
+							'key' 		=> $this->_base . 'main_language',
+							'value' 	=> '',
+							'compare' 	=> 'NOT EXISTS',
+						),
+						array(
+							'key' 		=> $this->_base . 'main_language',
+							'value' 	=> $language['main'],
+							'compare' 	=> 'LIKE',
+						),
+					));
 				}
 				else{
 					
-					$language['main'] = $default_lang;
+					$query->set( 'meta_query', array(
+						array(
+							'key' 		=> $this->_base . 'main_language',
+							'value' 	=> $language['main'],
+							'compare' 	=> 'LIKE',
+						),
+					));
 				}
-				
-				$language['default'] = $default_lang;
-			}
-		}
-		elseif( !empty($_COOKIE[$this->_base . 'main_language']) ){
-			
-			if( !isset($query->query['post_type']) || $query->query['post_type'] != 'nav_menu_item' ){
-			
-				$language['main'] 		= $_COOKIE[$this->_base . 'main_language'];
-				$language['default'] 	= $_COOKIE[$this->_base . 'default_language'];
-			}
-		}
-		
-		if( !empty($language['main']) ){
-			
-			if( $language['main'] == $language['default'] ){
-
-				$query->set( 'meta_query', array(
-					'relation'		=> 'OR',
-					array(
-						'key' 		=> $this->_base . 'main_language',
-						'value' 	=> '',
-						'compare' 	=> 'NOT EXISTS',
-					),
-					array(
-						'key' 		=> $this->_base . 'main_language',
-						'value' 	=> $language['main'],
-						'compare' 	=> 'LIKE',
-					),
-				));
-			}
-			else{
-				
-				$query->set( 'meta_query', array(
-					array(
-						'key' 		=> $this->_base . 'main_language',
-						'value' 	=> $language['main'],
-						'compare' 	=> 'LIKE',
-					),
-				));
 			}
 		}
 
@@ -500,18 +520,31 @@ class Language_Switcher {
 	}
 		
 	public function query_language_taxonomies( $args, $taxonomies ){
-
-		$language = '';
 		
-		if( !empty($_COOKIE[$this->_base . 'main_language']) ){
+		$has_language = false;
+		
+		foreach( $taxonomies as $taxonomy){
 			
-			$language['main'] = $_COOKIE[$this->_base . 'main_language'];
-			$language['default'] = $_COOKIE[$this->_base . 'default_language'];
-		
-			$args['meta_key'] 	= $this->_base . 'main_language';
-			$args['meta_value'] = $language['main'];
+			if( in_array( $taxonomy, $this->get_active_taxonomies() ) ){
+				
+				$has_language = true;
+			}
 		}
-
+		
+		if( $has_language ){
+		
+			$language = '';
+		
+			if( !empty($_COOKIE[$this->_base . 'main_lang']) ){
+				
+				$language['main'] = $_COOKIE[$this->_base . 'main_lang'];
+				$language['default'] = $_COOKIE[$this->_base . 'default_lang'];
+			
+				$args['meta_key'] 	= $this->_base . 'main_language';
+				$args['meta_value'] = $language['main'];
+			}
+		}
+		
 		return $args;
 	}
 	
@@ -519,10 +552,10 @@ class Language_Switcher {
 		
 		$language = '';
 		
-		if( !empty($_COOKIE[$this->_base . 'main_language']) ){
+		if( !empty($_COOKIE[$this->_base . 'main_lang']) ){
 			
-			$language['main'] = $_COOKIE[$this->_base . 'main_language'];
-			$language['default'] = $_COOKIE[$this->_base . 'default_language'];
+			$language['main'] = $_COOKIE[$this->_base . 'main_lang'];
+			$language['default'] = $_COOKIE[$this->_base . 'default_lang'];
 		}	
 		
 		if( $language['main'] == $language['default'] ){
@@ -603,8 +636,6 @@ class Language_Switcher {
 			}
 		}
 		
-		//echo'<pre>';var_dump($menu);exit;
-		
 		return $menu;
 	}
 	
@@ -637,7 +668,7 @@ class Language_Switcher {
 	
 	public function init_backend(){
 	
-		if( in_array( basename($_SERVER['SCRIPT_FILENAME']), array('post.php','edit.php') ) ){
+		if( in_array( basename($_SERVER['SCRIPT_FILENAME']), array('post.php','post-new.php','edit.php') ) ){
 
 			//add language in post types
 			
@@ -1027,7 +1058,7 @@ class Language_Switcher {
 				'type'				=> 'language_switcher_with_url',
 				'id'				=> 'language_switcher',
 				//'default'			=> get_permalink($_REQUEST['post']),
-				'data'				=> $this->get_post_language( $_REQUEST['post'] ),
+				'data'				=> isset($_REQUEST['post']) ? $this->get_post_language( $_REQUEST['post'] ) : '',
 				'description'		=> '',
 		);
 		
@@ -1268,7 +1299,7 @@ class Language_Switcher {
 	 */
 	public function admin_enqueue_scripts ( $hook = '' ) {
 		
-		wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin.js', array( 'jquery' ), $this->_version );
+		wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin.js', array( 'jquery' ), '1.0.4' );
 		wp_enqueue_script( $this->_token . '-admin' );	
 
 	} // End admin_enqueue_scripts ()

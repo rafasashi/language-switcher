@@ -263,7 +263,7 @@ class Language_Switcher_Settings {
 			'language-switcher-everywhere' 	=> array(
 			
 				'title' 		=> 'Languages Everywhere',
-				'addon_link' 	=> 'https://code.recuweb.com/download/language-switcher-everywhere/',
+				'addon_link' 	=> 'https://code.recuweb.com/get/language-switcher-everywhere/',
 				'addon_name' 	=> 'language-switcher-everywhere',
 				'source_url' 	=> '',
 				'logo_url' 		=> 'https://code.recuweb.com/c/u/3a09f4cf991c32bd735fa06db67889e5/2018/07/language-switcher-everywhere-squared-300x300.png',
@@ -271,10 +271,11 @@ class Language_Switcher_Settings {
 				'author' 		=> 'Code Market',
 				'author_link' 	=> 'https://code.recuweb.com/about-us/',
 			),
+			/*
 			'language-switcher-synchronizer' 	=> array(
 			
 				'title' 		=> 'Languages Synchronizer',
-				'addon_link' 	=> 'https://code.recuweb.com/download/language-switcher-synchronizer/',
+				'addon_link' 	=> 'https://code.recuweb.com/get/language-switcher-synchronizer/',
 				'addon_name' 	=> 'language-switcher-synchronizer',
 				'source_url' 	=> '',
 				'logo_url' 		=> 'https://code.recuweb.com/c/u/3a09f4cf991c32bd735fa06db67889e5/2018/07/language-switcher-synchronizer-squared-300x300.png',
@@ -282,6 +283,7 @@ class Language_Switcher_Settings {
 				'author' 		=> 'Code Market',
 				'author_link' 	=> 'https://code.recuweb.com/about-us/',
 			),
+			*/
 		);
 	}
 

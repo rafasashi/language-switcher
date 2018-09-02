@@ -346,9 +346,7 @@ class Language_Switcher_Admin_API {
 						$data['urls'] = array();
 					}
 
-					
-					
-					if( !isset($data['main']) ){
+					if( empty($data['main']) ){
 						
 						$data['main'] = substr( get_bloginfo ( 'language' ), 0, 2 );
 					}
@@ -407,11 +405,9 @@ class Language_Switcher_Admin_API {
 						$data['urls'] = array();
 					}
 
-					$default = substr( get_bloginfo ( 'language' ), 0, 2 );
-					
-					if( !isset($data['main']) ){
+					if( empty($data['main']) ){
 						
-						$data['main'] = $default;
+						$data['main'] = substr( get_bloginfo ( 'language' ), 0, 2 );
 					}
 					
 					$languages = $this->parent->get_languages();
