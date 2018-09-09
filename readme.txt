@@ -1,9 +1,9 @@
 === Language Switcher ===
 Contributors: rafasashi
-Tags: LANGUAGE, languages, checklist, LANGUAGE list, project management, LANGUAGE list
+Tags: language, languages, switcher, internationalization, internationalisation, multi-language, multilanguage, translation
 Donate link: https://code.recuweb.com/get/language-switcher/
 Requires at least: 4.6
-Tested up to: 4.9.6
+Tested up to: 4.9.8
 Stable tag: 3.0.0
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
@@ -27,7 +27,7 @@ Language Switcher allows you to map urls of alternative languages for Post Types
 
 = Addon Features =
  
-– LANGUAGE EVERYWHERE –  Enable language switcher for custom post types and taxonomies such as WooCommerce Product, Order, Category and Tags
+– [LANGUAGE EVERYWHERE](https://code.recuweb.com/get/language-switcher-everywhere/) –  Enable language switcher for custom post types and taxonomies such as WooCommerce Product, Order, Category and Tags
  
 More information about [Language Switcher](https://code.recuweb.com/get/language-switcher/)
 
