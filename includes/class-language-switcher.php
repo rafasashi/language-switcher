@@ -169,7 +169,7 @@ class Language_Switcher {
 		
 		// shorcodes
 		
-		add_shortcode( 'language-switcher', array($this,'get_language_switcher') );
+		add_shortcode( 'language-switcher', array($this,'get_language_switcher_shortcode') );
 
 		//widgets
 		
@@ -925,7 +925,15 @@ class Language_Switcher {
 				
 				if( $data['type'] == 'living' && $data['scope'] == 'individual' ){
 					
-					$this->languages[$data['iso_639_1']] = '<span class="lsw-iso">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span> <span class="lsw-language">' . ucfirst( $data['name'] ) . '</span> <i class="lsw-native">(' . $data['native'] . ')</i>';
+					$iso = $data['iso_639_1'];
+					
+					$this->languages[$iso]['iso'] = '<span class="lsw-iso">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span>';
+					
+					$this->languages[$iso]['full'] = '<span class="lsw-iso">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span> <span class="lsw-language">' . ucfirst( $data['name'] ) . '</span> <i class="lsw-native">(' . $data['native'] . ')</i>';
+				
+					$this->languages[$iso]['language'] = '<span class="lsw-language">' . ucfirst( $data['name'] ) . '</span>';
+				
+					$this->languages[$iso]['native'] = '<span class="lsw-language">' . ucfirst( $data['native'] ) . '</span>';
 				} 
 			}
 			
@@ -1111,7 +1119,16 @@ class Language_Switcher {
 		do_action('lsw_post_type_edited',$post_id);
 	}
 	
-	public function get_language_switcher( $display = 'button' ){
+	public function get_language_switcher_shortcode( $atts ){
+		
+		$display 	= ( !empty($atts['display']) ? $atts['display'] : 'button' );
+		$show 		= ( !empty($atts['show']) ? $atts['show'] : 'both' );
+		$icon 		= ( !empty($atts['icon']) ? $atts['icon'] : '' );
+		
+		return $this->get_language_switcher( $display, $show, $icon );
+	}
+	
+	public function get_language_switcher( $display = 'button', $show = 'both', $icon = '' ){
 		
 		$active_languages = $this->get_active_languages();
 		
@@ -1125,7 +1142,7 @@ class Language_Switcher {
 		
 		foreach($active_languages as $iso){
 			
-			$urls[$iso]['language'] = $languages[$iso];
+			$urls[$iso]['language'] = $languages[$iso]['full'];
 			
 			if( !empty($this->language['urls'][$iso]) ){
 				
@@ -1139,7 +1156,7 @@ class Language_Switcher {
 				}
 				else{
 					
-					$urls[$iso]['url'] = add_query_arg( array('lang' => $this->language['main']), home_url( $_SERVER['REQUEST_URI'] ) );
+					$urls[$iso]['url'] = add_query_arg( array('lang' => $iso), home_url( $_SERVER['REQUEST_URI'] ) );
 				}
 			}
 			else{
@@ -1152,13 +1169,23 @@ class Language_Switcher {
 		
 		$id = uniqid();
 		
-		$title = __('Language','language-switcher');
+		$title = '';
 		
-		foreach( $urls as $iso => $data ){
+		if( !empty($show) && $show!='none' ){
+		
+			$title = __('Language','language-switcher');
 			
-			if( $this->language['main'] == $iso ){
+			foreach( $urls as $iso => $data ){
 				
-				$title = __($data['language'],'language-switcher');
+				if( $this->language['main'] == $iso ){
+					
+					if( !empty($languages[$iso][$show]) ){
+					
+						$title = $languages[$iso][$show];
+					}
+					
+					break;
+				}
 			}
 		}
 		
@@ -1180,8 +1207,26 @@ class Language_Switcher {
 		}
 		else{
 			
-			echo'<a class="language-switcher-btn" href="#" data-jq-dropdown="#jq-dropdown-'.$id.'">'.$title.'</a>';
-
+			if( !empty($title) ){
+				
+				if( !empty($icon) ){
+					
+					echo'<a class="language-switcher-icon" href="#" data-jq-dropdown="#jq-dropdown-'.$id.'"><img src="'.$icon.'" />'.$title.'</a>';
+				}
+				else{
+					
+					echo'<a class="language-switcher-btn" href="#" data-jq-dropdown="#jq-dropdown-'.$id.'">'.$title.'</a>';
+				}
+			}
+			elseif( !empty($icon) ){
+			
+				echo'<a class="language-switcher-icon" href="#" data-jq-dropdown="#jq-dropdown-'.$id.'"><img src="'.$icon.'" /></a>';
+			}
+			else{
+				
+				echo'<a class="language-switcher-btn" href="#" data-jq-dropdown="#jq-dropdown-'.$id.'">'.$title.'</a>';
+			}
+			
 			// add switcher for inclusion in footer
 			
 			$this->switchers[$id] = '<div id="jq-dropdown-'.$id.'" class="jq-dropdown jq-dropdown-tip">';

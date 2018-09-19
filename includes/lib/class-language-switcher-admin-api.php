@@ -316,7 +316,7 @@ class Language_Switcher_Admin_API {
 							
 							$html .= '<div style="margin-bottom:10px;">';
 							
-								$html .= '<div style="margin-bottom:2px;">' . $language . '</div>';
+								$html .= '<div style="margin-bottom:2px;">' . $language['full'] . '</div>';
 							
 								$html .= '<input style="width:100%;" id="' . esc_attr( $field['id'] ) . '_' . $iso . '" type="text" name="' . esc_attr( $option_name ) . '['.$iso.']" placeholder="http://" value="' . ( isset($data[$iso]) ? esc_attr( $data[$iso] ) : '' ) . '" />' . "\n";
 
@@ -374,7 +374,7 @@ class Language_Switcher_Admin_API {
 									
 									$html .= '<input id="' . esc_attr( $field['id'] ) . '_main_' . $iso . '" class="' . esc_attr( $field['id'] ) . '_main" type="radio" name="' . esc_attr( $option_name ) . '[main]" value="' . $iso . '"' . ( $data['main'] == $iso ? ' checked="checked"' : '' ) . ' />' . "\n";										
 									
-									$html .= '<div style="margin-bottom:2px;width:90%;display: inline-block;">' . $language . '</div>';
+									$html .= '<div style="margin-bottom:2px;width:90%;display: inline-block;">' . $language['full'] . '</div>';
 
 									$html .= '<input style="width:90%;margin-left:25px;" id="' . esc_attr( $field['id'] ) . '_url_' . $iso . '" type="text" name="' . esc_attr( $option_name ) . '[urls]['.$iso.']" placeholder="http://" value="' . $value . '"'.( $data['main'] == $iso ? ' disabled="disabled"' : '' ).'/>' . "\n";
 
@@ -433,7 +433,7 @@ class Language_Switcher_Admin_API {
 									
 									$html .= '<input id="' . esc_attr( $field['id'] ) . '_main_' . $iso . '" class="' . esc_attr( $field['id'] ) . '_main" type="radio" name="' . esc_attr( $option_name ) . '[main]" value="' . $iso . '"' . ( $data['main'] == $iso ? ' checked="checked"' : '' ) . ' />' . "\n";										
 									
-									$html .= '<div style="margin-bottom:2px;width:90%;display: inline-block;">' . $language . '</div>';
+									$html .= '<div style="margin-bottom:2px;width:90%;display: inline-block;">' . $language['full'] . '</div>';
 										
 									$html .= '<input id="' . esc_attr( $field['id'] ) . '_url_' . $iso . '" type="hidden" name="' . esc_attr( $option_name ) . '[urls]['.$iso.']" ' . $value . '" />' . "\n";
 									
