@@ -1122,13 +1122,13 @@ class Language_Switcher {
 	public function get_language_switcher_shortcode( $atts ){
 		
 		$display 	= ( !empty($atts['display']) ? $atts['display'] : 'button' );
-		$show 		= ( !empty($atts['show']) ? $atts['show'] : 'both' );
+		$show 		= ( !empty($atts['show']) ? $atts['show'] : 'full' );
 		$icon 		= ( !empty($atts['icon']) ? $atts['icon'] : '' );
 		
 		return $this->get_language_switcher( $display, $show, $icon );
 	}
 	
-	public function get_language_switcher( $display = 'button', $show = 'both', $icon = '' ){
+	public function get_language_switcher( $display = 'button', $show = 'full', $icon = '' ){
 		
 		$active_languages = $this->get_active_languages();
 		
