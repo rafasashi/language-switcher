@@ -62,6 +62,6 @@
 		}
 
 		return $instance;
-	}	
+	}
 
 	Language_Switcher();

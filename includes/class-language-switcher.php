@@ -154,9 +154,20 @@ class Language_Switcher {
 
 		/* Localisation */
 		
+		add_filter('locale', function ($locale){
+			
+			if( !empty($_COOKIE['lsw_main_lang']) ){
+				
+				$locale = $_COOKIE['lsw_main_lang'] . '_' . strtoupper($_COOKIE['lsw_main_lang']);
+			}
+
+			return $locale;
+		});
+		
 		$locale = apply_filters('plugin_locale', get_locale(), 'language-switcher');
-		load_textdomain('language_switcher', WP_PLUGIN_DIR . "/".plugin_basename(dirname(__FILE__)).'/lang/language_switcher-'.$locale.'.mo');
-		load_plugin_textdomain('language_switcher', false, dirname(plugin_basename(__FILE__)).'/lang/');
+
+		load_textdomain('language-switcher', Language_Switcher::$plugin_path . 'lang/language-switcher-'.$locale.'.mo');
+		load_plugin_textdomain('language-switcher', false, Language_Switcher::$plugin_path . 'lang/');
 		
 		if(is_admin()){
 			
@@ -182,7 +193,7 @@ class Language_Switcher {
 		//get current language
 		
 		add_filter('wp', array($this, 'get_current_language'));
-		
+
 		//filter languages
 		
 		add_filter('pre_get_posts', array( $this, 'query_language_posts') );
@@ -303,13 +314,14 @@ class Language_Switcher {
 		
 		return $language;
 	}
+
 	
 	public function get_current_language(){
 
 		if( empty($this->language) ){
-		
+			
 			$default_lang = substr( get_bloginfo ( 'language' ), 0, 2 );
-
+			
 			$default_urls = get_option( $this->_base . 'default_language_urls' );
 
 			if( is_singular() ){
@@ -429,7 +441,11 @@ class Language_Switcher {
 					switch_to_locale( $this->language['main'] . '_' . strtoupper($this->language['main']) );
 				}
 			}
+			
+			
 		}
+		
+		return $this->language;
 	}
 	
 	public function query_language_posts( $query ){
@@ -451,7 +467,7 @@ class Language_Switcher {
 				
 				if( $query->is_category() || $query->is_tag() || $query->is_tax() ){
 					
-					$queried 	= get_queried_object();
+					$queried = get_queried_object();
 					
 					if( !empty($queried->term_id) ){
 						

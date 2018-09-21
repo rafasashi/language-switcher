@@ -4,7 +4,7 @@ Tags: language, languages, switcher, internationalization, internationalisation,
 Donate link: https://code.recuweb.com/get/language-switcher/
 Requires at least: 4.6
 Tested up to: 4.9.8
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
@@ -59,6 +59,18 @@ The manual installation method involves downloading my plugin and uploading it t
 2. Using an FTP program, or your hosting control panel, upload the unzipped plugin folder to your WordPress installation's wp-content/plugins/ directory.
 3. Activate the plugin from the Plugins menu within the WordPress admin.
 
+= Switch Language before any plugins =
+
+If the Language Switcher is loaded after other Plugins add the following code to wp-config.php before requesting wp-settings.php
+
+`if( !empty($_COOKIE['lsw_main_lang']) ){
+
+	$locale = $_COOKIE['lsw_main_lang'] . '_' . strtoupper($_COOKIE['lsw_main_lang']);
+
+	if(!defined('WPLANG'))
+		define ('WPLANG', $locale);
+}`
+
 = Upgrading =
 
 Automatic updates should work like a charm; as always though, ensure you backup your site just in case.
@@ -73,6 +85,10 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 6. Add the language switcher with the widget
 
 == Changelog ==
+
+= 3.0.1 - 21/9/2018 =
+
+* Switch Language before any plugins 
 
 = 3.0.0 - 2/9/2018 =
 
