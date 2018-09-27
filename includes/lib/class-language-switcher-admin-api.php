@@ -338,7 +338,7 @@ class Language_Switcher_Admin_API {
 
 					if( !is_array($data) ){
 						
-						$data = array();
+						$data = array('main'=>$data);
 					}
 				
 					if( !isset($data['urls']) ){
@@ -397,7 +397,7 @@ class Language_Switcher_Admin_API {
 
 					if( !is_array($data) ){
 						
-						$data = array();
+						$data = array('main'=>$data);
 					}
 				
 					if( !isset($data['urls']) ){

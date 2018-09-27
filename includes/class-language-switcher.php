@@ -842,14 +842,14 @@ class Language_Switcher {
 			</th>  
 			<td>  
 				<?php 
-				
+
 				echo $this->admin->display_field( array(
 				
 					'type'				=> get_taxonomy( $term->taxonomy )->public ? 'language_switcher_with_url' : 'language_switcher_without_url',
 					'id'				=> 'language_switcher',
 					'name'				=> 'language_switcher',
 					'placeholder'		=> 'add new languages',
-					'data'				=> get_term_meta( $term->term_id, 'language_switcher', true),
+					'data'				=> get_term_meta($term->term_id,$this->_base . 'main_language', true),
 					//'default'			=> get_term_link($term,$term->taxonomy),
 					'description'		=> '',
 					
