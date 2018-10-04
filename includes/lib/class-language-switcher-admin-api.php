@@ -277,7 +277,7 @@ class Language_Switcher_Admin_API {
 
 			case 'language_checkbox_multi':
 			
-				$default = substr( get_bloginfo ( 'language' ), 0, 2 );
+				$default = substr( get_site_option('WPLANG'), 0, 2 );
 
 				foreach ( $field['options'] as $k => $v ) {
 
@@ -348,7 +348,7 @@ class Language_Switcher_Admin_API {
 
 					if( empty($data['main']) ){
 						
-						$data['main'] = substr( get_bloginfo ( 'language' ), 0, 2 );
+						$data['main'] = substr( get_site_option('WPLANG'), 0, 2 );
 					}
 
 					$languages = $this->parent->get_languages();
@@ -407,7 +407,7 @@ class Language_Switcher_Admin_API {
 
 					if( empty($data['main']) ){
 						
-						$data['main'] = substr( get_bloginfo ( 'language' ), 0, 2 );
+						$data['main'] = substr( get_site_option('WPLANG'), 0, 2 );
 					}
 					
 					$languages = $this->parent->get_languages();

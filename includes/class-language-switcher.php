@@ -320,7 +320,7 @@ class Language_Switcher {
 
 		if( empty($this->language) ){
 			
-			$default_lang = substr( get_bloginfo ( 'language' ), 0, 2 );
+			$default_lang = substr( get_site_option('WPLANG'), 0, 2 );
 			
 			$default_urls = get_option( $this->_base . 'default_language_urls' );
 
@@ -461,7 +461,7 @@ class Language_Switcher {
 			
 			$language = '';
 			
-			$default_lang = substr( get_bloginfo ( 'language' ), 0, 2 );
+			$default_lang = substr( get_site_option('WPLANG'), 0, 2 );
 			
 			if( $query->is_main_query() ){
 				
@@ -1003,7 +1003,7 @@ class Language_Switcher {
 		
 		if( is_null($this->active_languages) ){
 			
-			$default = substr( get_bloginfo ( 'language' ), 0, 2 );
+			$default = substr( get_site_option('WPLANG'), 0, 2 );
 			
 			if( $this->active_languages = get_option( $this->_base . 'active_languages') ){
 			
