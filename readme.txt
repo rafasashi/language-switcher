@@ -4,7 +4,7 @@ Tags: language, languages, switcher, internationalization, internationalisation,
 Donate link: https://code.recuweb.com/get/language-switcher/
 Requires at least: 4.6
 Tested up to: 4.9.8
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
@@ -85,6 +85,10 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 6. Add the language switcher with the widget
 
 == Changelog ==
+
+= 3.0.4 - 10/10/2018 =
+
+* Defaut language from cookie fixed
 
 = 3.0.3 - 4/10/2018 =
 
