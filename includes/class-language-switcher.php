@@ -497,7 +497,7 @@ class Language_Switcher {
 				if( !isset($query->query['post_type']) || $query->query['post_type'] != 'nav_menu_item' ){
 				
 					$language['main'] 		= $_COOKIE[$this->_base . 'main_lang'];
-					$language['default'] 	= $_COOKIE[$this->_base . 'default_lang'];
+					$language['default'] 	= ( !empty($_COOKIE[$this->_base . 'default_lang']) ? $_COOKIE[$this->_base . 'default_lang'] : $default_lang );
 				}
 			}
 			
@@ -550,11 +550,13 @@ class Language_Switcher {
 		if( $has_language ){
 		
 			$language = '';
+			
+			$default_lang = substr( get_site_option('WPLANG'), 0, 2 );
 		
 			if( !empty($_COOKIE[$this->_base . 'main_lang']) ){
 				
 				$language['main'] = $_COOKIE[$this->_base . 'main_lang'];
-				$language['default'] = $_COOKIE[$this->_base . 'default_lang'];
+				$language['default'] = ( !empty($_COOKIE[$this->_base . 'default_lang']) ? $_COOKIE[$this->_base . 'default_lang'] : $default_lang );
 			
 				$args['meta_key'] 	= $this->_base . 'main_language';
 				$args['meta_value'] = $language['main'];
@@ -568,10 +570,12 @@ class Language_Switcher {
 		
 		$language = '';
 		
+		$default_lang = substr( get_site_option('WPLANG'), 0, 2 );
+		
 		if( !empty($_COOKIE[$this->_base . 'main_lang']) ){
 			
 			$language['main'] = $_COOKIE[$this->_base . 'main_lang'];
-			$language['default'] = $_COOKIE[$this->_base . 'default_lang'];
+			$language['default'] = ( !empty($_COOKIE[$this->_base . 'default_lang']) ? $_COOKIE[$this->_base . 'default_lang'] : $default_lang );
 		}	
 		
 		if( $language['main'] == $language['default'] ){
@@ -1158,26 +1162,29 @@ class Language_Switcher {
 		
 		foreach($active_languages as $iso){
 			
-			$urls[$iso]['language'] = $languages[$iso]['full'];
+			if( !empty($languages[$iso]) ){
 			
-			if( !empty($this->language['urls'][$iso]) ){
+				$urls[$iso]['language'] = $languages[$iso]['full'];
 				
-				$urls[$iso]['url'] = $this->language['urls'][$iso];
-			}
-			elseif( $this->language['main'] != $iso ){
-				
-				if( !empty($default_urls[$iso]) ){
-				
-					$urls[$iso]['url'] = $default_urls[$iso];
+				if( !empty($this->language['urls'][$iso]) ){
+					
+					$urls[$iso]['url'] = $this->language['urls'][$iso];
+				}
+				elseif( $this->language['main'] != $iso ){
+					
+					if( !empty($default_urls[$iso]) ){
+					
+						$urls[$iso]['url'] = $default_urls[$iso];
+					}
+					else{
+						
+						$urls[$iso]['url'] = add_query_arg( array('lang' => $iso), home_url( $_SERVER['REQUEST_URI'] ) );
+					}
 				}
 				else{
 					
-					$urls[$iso]['url'] = add_query_arg( array('lang' => $iso), home_url( $_SERVER['REQUEST_URI'] ) );
+					$urls[$iso]['url'] = home_url( $_SERVER['REQUEST_URI'] );
 				}
-			}
-			else{
-				
-				$urls[$iso]['url'] = home_url( $_SERVER['REQUEST_URI'] );
 			}
 		}
 
