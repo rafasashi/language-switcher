@@ -314,17 +314,44 @@ class Language_Switcher {
 		
 		return $language;
 	}
-
 	
+	public function get_default_language(){
+		
+		if( !empty($_COOKIE[$this->_base . 'default_lang']) ){
+			
+			$default_lang = $_COOKIE[$this->_base . 'default_lang'];
+		}
+		else{
+			
+			$default_lang = get_option('WPLANG');
+			
+			if( empty($default_lang) ){
+				
+				if( defined('WPLANG') && !empty(WPLANG) ){
+					
+					$default_lang = WPLANG;
+				}
+				else{
+					
+					$default_lang = get_locale();
+				}
+			}
+		}
+		
+		$default_lang = substr( $default_lang, 0, 2 );
+
+		return $default_lang;	
+	}
+
 	public function get_current_language(){
 
 		if( empty($this->language) ){
-			
-			$default_lang = substr( get_site_option('WPLANG'), 0, 2 );
+
+			$default_lang = $this->get_default_language();
 			
 			$default_urls = get_option( $this->_base . 'default_language_urls' );
 
-			if( is_singular() ){
+			if( is_singular() && !is_front_page() ){
 				
 				$this->language = $this->get_post_language( get_queried_object_id() );
 
@@ -345,27 +372,33 @@ class Language_Switcher {
 					$this->language['main'] = $default_lang;
 				}
 			}
-			elseif( !empty($_REQUEST['lang']) ){
+			elseif( is_archive() ){
+								
+				$this->language['urls'] = $default_urls;
 				
+				if( empty($this->language['main']) ){
+					
+					$this->language['main'] = (!empty($_REQUEST['lang']) ? sanitize_title($_REQUEST['lang']) : $default_lang);
+				}
+			
+				foreach( $this->language['urls'] as $iso => $url ){
+					
+					if( $iso != $default_lang ){
+						
+						$this->language['urls'][$iso] = add_query_arg( array('lang' => $iso), home_url( $_SERVER['REQUEST_URI'] ) );
+					}
+					else{
+						
+						$this->language['urls'][$iso] = remove_query_arg( array('lang'), home_url( $_SERVER['REQUEST_URI'] ) );
+					}
+				}
+			}
+			elseif( !empty($_REQUEST['lang']) ){
+			
 				$this->language = array(
 					'urls' => $default_urls,
 					'main' => sanitize_title($_REQUEST['lang']),
 				);
-				
-				if( is_archive() ){
-				
-					foreach( $this->language['urls'] as $iso => $url ){
-						
-						if( $iso != $default_lang ){
-							
-							$this->language['urls'][$iso] = add_query_arg( array('lang' => $iso), home_url( $_SERVER['REQUEST_URI'] ) );
-						}
-						else{
-							
-							$this->language['urls'][$iso] = remove_query_arg( array('lang'), home_url( $_SERVER['REQUEST_URI'] ) );
-						}
-					}
-				}
 			}
 			else{
 				
@@ -374,7 +407,7 @@ class Language_Switcher {
 					'main' => $default_lang,
 				);
 			}
-			
+
 			//set default language
 				
 			$this->language['default'] = $default_lang;
@@ -404,27 +437,38 @@ class Language_Switcher {
 				
 				if( !isset($_COOKIE[$this->_base . 'main_lang']) || $_COOKIE[$this->_base . 'main_lang'] != $this->language['main'] || !isset($_COOKIE[$this->_base . 'default_lang']) || $_COOKIE[$this->_base . 'default_lang'] != $this->language['default'] ) {
 					
+					//prevent redirecting shearch engine and crawlers
+					
+					$can_redirect = ( ( !empty($_SESSION[$this->_base . 'started']) || !empty($_COOKIE) ) ? true : false );
+					
 					//set cookies
 					
 					setcookie($this->_base . 'main_lang', $this->language['main'], 0, '/');
 					
 					setcookie($this->_base . 'default_lang', $this->language['default'], 0, '/');
 					
-					// redirect language url
+					if( $can_redirect === true ){
 					
-					if( $default_lang != $main_lang && !empty($this->language['urls'][$main_lang]) && $current_url != $this->language['urls'][$main_lang] ){
+						// redirect language url
 						
-						wp_redirect( $this->language['urls'][$main_lang] );
-						exit;						
-					}						
-					elseif( !isset($_COOKIE[$this->_base . 'redirect']) || $_COOKIE[$this->_base . 'redirect'] != $current_url ){
-						
-						setcookie($this->_base . 'redirect',$current_url, 0, '/');
+						if( !empty($this->language['urls'][$main_lang]) && $current_url != $this->language['urls'][$main_lang] ){
+							
+							wp_redirect( $this->language['urls'][$main_lang] );
+							exit;						
+						}						
+						elseif( !isset($_SESSION[$this->_base . 'redirect']) || $_SESSION[$this->_base . 'redirect'] != $current_url ){
+							
+							$_SESSION[$this->_base . 'redirect'] = $current_url;
 
-						//var_dump($_COOKIE);exit;
+							//var_dump($_SESSION);exit;
+							
+							wp_redirect( $current_url );
+							exit;
+						}
+					}
+					else{
 						
-						wp_redirect( $current_url );
-						exit;
+						$_SESSION[$this->_base . 'started'] = time();
 					}
 				}
 				elseif( $default_lang != $main_lang && !empty($this->language['urls'][$main_lang]) && $current_url != $this->language['urls'][$main_lang] ){
@@ -441,8 +485,6 @@ class Language_Switcher {
 					switch_to_locale( $this->language['main'] . '_' . strtoupper($this->language['main']) );
 				}
 			}
-			
-			
 		}
 		
 		return $this->language;
@@ -452,7 +494,7 @@ class Language_Switcher {
 		
 		$has_language = true;
 		
-		if( isset($query->query['post_type']) && !in_array($query->query['post_type'],$this->get_active_post_types()) ){
+		if( empty($_REQUEST['lang']) && !is_archive() && ( !isset($query->query['post_type']) || !is_array($query->query['post_type']) || !in_array($query->query['post_type'],$this->get_active_post_types() ) ) ){
 			
 			$has_language = false;
 		}
@@ -461,7 +503,7 @@ class Language_Switcher {
 			
 			$language = '';
 			
-			$default_lang = substr( get_site_option('WPLANG'), 0, 2 );
+			$default_lang = $this->get_default_language();
 			
 			if( $query->is_main_query() ){
 				
@@ -539,11 +581,19 @@ class Language_Switcher {
 		
 		$has_language = false;
 		
-		foreach( $taxonomies as $taxonomy){
+		if( !empty($taxonomies) ){
 			
-			if( in_array( $taxonomy, $this->get_active_taxonomies() ) ){
+			$active_taxonomies = $this->get_active_taxonomies();
+		
+			foreach( $taxonomies as $taxonomy){
+
+				if( is_string($taxonomy) && is_array($active_taxonomies) ){
 				
-				$has_language = true;
+					if( in_array( $taxonomy, $active_taxonomies ) ){
+						
+						$has_language = true;
+					}
+				}
 			}
 		}
 		
@@ -551,15 +601,29 @@ class Language_Switcher {
 		
 			$language = '';
 			
-			$default_lang = substr( get_site_option('WPLANG'), 0, 2 );
+			$default_lang = $this->get_default_language();
 		
 			if( !empty($_COOKIE[$this->_base . 'main_lang']) ){
 				
-				$language['main'] = $_COOKIE[$this->_base . 'main_lang'];
-				$language['default'] = ( !empty($_COOKIE[$this->_base . 'default_lang']) ? $_COOKIE[$this->_base . 'default_lang'] : $default_lang );
-			
-				$args['meta_key'] 	= $this->_base . 'main_language';
-				$args['meta_value'] = $language['main'];
+				if( $_COOKIE[$this->_base . 'main_lang'] != $default_lang ){
+					
+					$args['meta_key'] 	= $this->_base . 'main_language';
+					$args['meta_value'] = $_COOKIE[$this->_base . 'main_lang'];					
+				}
+				else{
+
+					$args['meta_query'] = array(
+					   'relation' => 'OR',
+						array(
+							'key' 		=> $this->_base . 'main_language',
+							'compare' 	=> 'NOT EXISTS'
+						),
+						array(
+						 'key' 		=> $this->_base . 'main_language',
+						 'value' 	=> $_COOKIE[$this->_base . 'main_lang']
+						)
+					);
+				}
 			}
 		}
 		
@@ -570,7 +634,7 @@ class Language_Switcher {
 		
 		$language = '';
 		
-		$default_lang = substr( get_site_option('WPLANG'), 0, 2 );
+		$default_lang = $this->get_default_language();
 		
 		if( !empty($_COOKIE[$this->_base . 'main_lang']) ){
 			
@@ -969,11 +1033,14 @@ class Language_Switcher {
 			
 			$valid = get_option( $this->_base . 'language_taxonomies');
 			
-			foreach( $valid as  $e => $taxonomy ){
-				
-				if( !$this->is_valid_taxonomy($taxonomy) ){
+			if( !empty($valid) ){
+			
+				foreach( $valid as  $e => $taxonomy ){
 					
-					unset( $valid[$e] );
+					if( !$this->is_valid_taxonomy($taxonomy) ){
+						
+						unset( $valid[$e] );
+					}
 				}
 			}
 			
@@ -988,12 +1055,15 @@ class Language_Switcher {
 		if( is_null($this->active_post_types) ){
 
 			$valid = get_option( $this->_base . 'language_post_types');
-
-			foreach( $valid as  $e => $post_type ){
+			
+			if( !empty($valid) ){
 				
-				if( !$this->is_valid_post_type($post_type) ){
+				foreach( $valid as  $e => $post_type ){
 					
-					unset( $valid[$e] );
+					if( !$this->is_valid_post_type($post_type) ){
+						
+						unset( $valid[$e] );
+					}
 				}
 			}
 			
@@ -1007,7 +1077,7 @@ class Language_Switcher {
 		
 		if( is_null($this->active_languages) ){
 			
-			$default = substr( get_site_option('WPLANG'), 0, 2 );
+			$default = $this->get_default_language();
 			
 			if( $this->active_languages = get_option( $this->_base . 'active_languages') ){
 			

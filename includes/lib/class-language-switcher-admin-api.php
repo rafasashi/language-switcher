@@ -295,6 +295,11 @@ class Language_Switcher_Admin_API {
 						$disabled = true;
 					}
 					
+					if( is_array($v) ){
+						
+						$v = $v['full'];
+					}
+
 					$html .= '<label style="display:block;padding: 6px 0px;" for="' . esc_attr( $field['id'] . '_' . $k ) . '" class="checkbox_multi">';
 						
 						$html .= '<input type="checkbox" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '[]" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" ' . disabled( $disabled, true, false ) . '/> ' . $v . ( $k == $default ? '<span style="background: #FFC107;font-size: 10px;padding: 1px 5px;color: #fff;margin: 0px 7px;border-radius: 2px;">default</span>' : '' );
