@@ -3,8 +3,8 @@ Contributors: rafasashi
 Tags: language, languages, switcher, internationalization, internationalisation, multi-language, multilanguage, translation
 Donate link: https://code.recuweb.com/get/language-switcher/
 Requires at least: 4.6
-Tested up to: 4.9.8
-Stable tag: 3.0.7
+Tested up to: 5.0
+Stable tag: 3.0.9
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
@@ -85,6 +85,14 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 6. Add the language switcher with the widget
 
 == Changelog ==
+
+= 3.0.9 - 9/12/2018 =
+
+* Macrolanguages such as Arabic added
+
+= 3.0.8 - 26/11/2018 =
+
+* New settings to disable query filters
 
 = 3.0.7 - 23/11/2018 =
 

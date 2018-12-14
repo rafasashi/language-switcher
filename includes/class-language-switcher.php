@@ -196,11 +196,20 @@ class Language_Switcher {
 
 		//filter languages
 		
-		add_filter('pre_get_posts', array( $this, 'query_language_posts') );
-
-		add_filter('get_terms_args', array( $this, 'query_language_taxonomies'), 10, 2 );
-		 
-		add_filter('pre_get_comments', array( $this, 'query_language_comments') );		
+		if( get_option($this->_base . 'disable_posts_query_filter') != 'on' ){
+		
+			add_filter('pre_get_posts', array( $this, 'query_language_posts') );
+		}
+		
+		if( get_option($this->_base . 'disable_terms_query_filter') != 'on' ){
+		
+			add_filter('get_terms_args', array( $this, 'query_language_taxonomies'), 10, 2 );
+		}
+		
+		if( get_option($this->_base . 'disable_comments_query_filter') != 'on' ){
+		
+			add_filter('pre_get_comments', array( $this, 'query_language_comments') );
+		}
 		
 		//append urls
 		
@@ -208,8 +217,11 @@ class Language_Switcher {
 		
 		//filter menus
 		
-		add_filter('wp_get_nav_menu_items', array( $this, 'filter_language_menus'), 10, 2 );
-	
+		if( get_option($this->_base . 'disable_menus_query_filter') != 'on' ){
+		
+			add_filter('wp_get_nav_menu_items', array( $this, 'filter_language_menus'), 10, 2 );
+		}
+		
 		//add switchers
 
 		add_action( 'wp_footer', array( $this, 'add_switchers'), 100);
@@ -787,16 +799,19 @@ class Language_Switcher {
 		
 			//add language in taxonomies
 			
-			foreach( $this->get_active_taxonomies() as $taxonomy ){
-			
-				add_action( $taxonomy . '_edit_form_fields', array($this, 'add_language_switcher_taxonomy_field'), 10, 2 );
-			
-				add_action( 'edited_' . $taxonomy, array($this, 'save_language_taxonomy'), 10, 2 );
-			
-				add_filter( 'manage_edit-'.$taxonomy.'_columns' , array( $this, 'set_language_taxonomy_columns' ) );
+			if($taxonomies = $this->get_active_taxonomies()){
 				
-				add_action( 'manage_'.$taxonomy.'_custom_column', array( $this, 'get_language_taxonomy_column' ), 10,3 );			
-			}	
+				foreach( $taxonomies as $taxonomy ){
+				
+					add_action( $taxonomy . '_edit_form_fields', array($this, 'add_language_switcher_taxonomy_field'), 10, 2 );
+				
+					add_action( 'edited_' . $taxonomy, array($this, 'save_language_taxonomy'), 10, 2 );
+				
+					add_filter( 'manage_edit-'.$taxonomy.'_columns' , array( $this, 'set_language_taxonomy_columns' ) );
+					
+					add_action( 'manage_'.$taxonomy.'_custom_column', array( $this, 'get_language_taxonomy_column' ), 10,3 );			
+				}
+			}
 			
 			add_filter( 'get_terms_args', array( $this, 'query_admin_language_taxonomy'), 10, 2 );			
 		}
@@ -1007,7 +1022,7 @@ class Language_Switcher {
 			
 			foreach( $languages as $iso => $data ){
 				
-				if( $data['type'] == 'living' && $data['scope'] == 'individual' ){
+				if( $data['type'] == 'living' && ( $data['scope'] == 'individual' || $data['scope'] == 'macrolanguage' ) ){
 					
 					$iso = $data['iso_639_1'];
 					

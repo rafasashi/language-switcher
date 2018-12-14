@@ -182,6 +182,34 @@ class Language_Switcher_Settings {
 					'type'			=> 'default_language_urls',
 					'default'		=> '',
 				),
+				array(
+					'id' 			=> 'disable_posts_query_filter',
+					'label'			=> __( 'Disable Posts Query Filter' , 'language-switcher' ),
+					'description'	=> '',
+					'type'			=> 'checkbox',
+					'default'		=> '',
+				),
+				array(
+					'id' 			=> 'disable_terms_query_filter',
+					'label'			=> __( 'Disable Terms Query Filter' , 'language-switcher' ),
+					'description'	=> '',
+					'type'			=> 'checkbox',
+					'default'		=> '',
+				),
+				array(
+					'id' 			=> 'disable_menus_query_filter',
+					'label'			=> __( 'Disable Menus Query Filter' , 'language-switcher' ),
+					'description'	=> '',
+					'type'			=> 'checkbox',
+					'default'		=> '',
+				),				
+				array(
+					'id' 			=> 'disable_comments_query_filter',
+					'label'			=> __( 'Disable Comments Query Filter' , 'language-switcher' ),
+					'description'	=> '',
+					'type'			=> 'checkbox',
+					'default'		=> '',
+				),
 			) 
 		);
 		
