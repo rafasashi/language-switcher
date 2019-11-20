@@ -130,6 +130,21 @@ class Language_Switcher_Settings {
 		
   		return $links;
 	}
+	
+	public function get_nav_menus(){
+		
+		$options = array();
+		
+		if( $menus = wp_get_nav_menus() ){
+			
+			foreach( $menus as $menu ){
+				
+				$options[$menu->slug] = $menu->name;
+			}
+		}
+		
+		return $options;
+	}
 
 	/**
 	 * Build settings fields
@@ -182,6 +197,23 @@ class Language_Switcher_Settings {
 					'type'			=> 'default_language_urls',
 					'default'		=> '',
 				),
+				array(
+					'id' 			=> 'add_switcher_to_menus',
+					'label'			=> __( 'Show in Navigation Menu' , 'language-switcher' ),
+					'description'	=> '',
+					'type'			=> 'checkbox_multi',
+					'options'		=> $this->get_nav_menus(),
+					'default'		=> '',
+				),
+				/*
+				array(
+					'id' 			=> 'detect_browser_language',
+					'label'			=> __( 'Detect Browser Language' , 'language-switcher' ),
+					'description'	=> '',
+					'type'			=> 'checkbox',
+					'default'		=> '',
+				),
+				*/
 				array(
 					'id' 			=> 'disable_posts_query_filter',
 					'label'			=> __( 'Disable Posts Query Filter' , 'language-switcher' ),

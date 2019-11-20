@@ -3,8 +3,8 @@ Contributors: rafasashi
 Tags: language, languages, switcher, internationalization, internationalisation, multi-language, multilanguage, translation
 Donate link: https://code.recuweb.com/get/language-switcher/
 Requires at least: 4.6
-Tested up to: 5.0
-Stable tag: 3.0.9
+Tested up to: 5.3
+Stable tag: 3.1.5
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
@@ -20,10 +20,12 @@ Language Switcher allows you to map urls of alternative languages for Post Types
 – MIXED SOURCES - map internal or external urls
 – POST TYPE LANGUAGE - Add a main language selector to post types and map urls of alternative languages
 – TAXONOMY LANGUAGE  - Add a main language selector to terms and map urls of alternative languages
+– HREFLANG LINKS - Add hreflang links into the head of each page
 – MENU LANGUAGE - Add a main language selector to the menu settings and switch the menu accordingly
 – LANGUAGE FILTERS - Filter items by language in the main WP_Query of archive pages
 – LANGUAGE WIDGET - Add the language switcher with the widget
 – LANGUAGE SHORTCODE - Add the language switcher anywhere with the shortcode [language-switcher]
+– LANGUAGE MENUS - Add the language switcher to your navigation menus
 
 = Addon Features =
  

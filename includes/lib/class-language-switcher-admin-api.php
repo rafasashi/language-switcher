@@ -138,7 +138,7 @@ class Language_Switcher_Admin_API {
 					if ( in_array( $k, (array) $data ) ) {
 						$checked = true;
 					}
-					$html .= '<label for="' . esc_attr( $field['id'] . '_' . $k ) . '" class="checkbox_multi"><input type="checkbox" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '[]" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" /> ' . $v . '</label> ';
+					$html .= '<label style="display:block;" for="' . esc_attr( $field['id'] . '_' . $k ) . '" class="checkbox_multi"><input type="checkbox" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '[]" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" /> ' . $v . '</label> ';
 				}
 			break;
 			
@@ -249,7 +249,7 @@ class Language_Switcher_Admin_API {
 			case 'object_checkbox_multi':
 			
 				$labels = $this->parent->get_labels();
-
+				
 				foreach ( $field['options'] as $k => $v ) {
 				
 					$disabled = true;
