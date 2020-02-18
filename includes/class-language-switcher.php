@@ -523,7 +523,7 @@ class Language_Switcher {
 					
 					//prevent redirecting search engine and crawlers
 					
-					$can_redirect = ( ( !empty($_SESSION[$this->_base . 'started']) || !empty($_COOKIE) ) ? true : false );
+					$can_redirect = ( ( !empty($_SESSION[$this->_base . 'started']) && !empty($_COOKIE) ) ? true : false );
 									
 					/*
 					//get browser language
