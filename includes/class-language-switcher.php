@@ -1476,7 +1476,7 @@ class Language_Switcher {
 							'object'          	=> 'custom',
 							'type'          	=> 'custom',
 							'url'              	=> '#language',
-							'classes'           => array('menu-item','menu-item-type-custom','menu-item-object-custom'),
+							'classes'           => array('menu-item','menu-item-type-custom','menu-item-object-custom','menu-item-has-children'),
 							'target'           	=> '',
 							'xfn'           	=> '',
 							'current'         	=> false,
