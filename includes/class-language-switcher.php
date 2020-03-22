@@ -180,15 +180,15 @@ class Language_Switcher {
 		
 		// shorcodes
 		
-		add_shortcode( 'language-switcher', array($this,'get_language_switcher_shortcode') );
+		add_shortcode('language-switcher', array($this,'get_language_switcher_shortcode') );
 
 		//widgets
 		
-		add_action( 'widgets_init', array($this,'init_widgets'));		
+		add_action('widgets_init', array($this,'init_widgets'));		
 		
 		//menus
 		
-		add_filter( 'wp_nav_menu_items', array($this,'get_language_switcher_menu'), 9999, 2 );
+		add_filter('wp_nav_menu_objects', array($this,'get_language_switcher_menu'), 9999, 2 );
 		
 		add_action('wp_head', array($this,'add_hreflang_in_head'));
 
@@ -1461,40 +1461,53 @@ class Language_Switcher {
 				if( $args->menu->slug == $menu ) {
 					
 					// get languages
-				
+					
 					$languages = $this->get_languages();
 				
 					// get language urls
 					
 					if( $urls = $this->get_language_urls($languages) ){
+						
+						$link = array (
+							'title'            	=> __('Language','language-switcher'),
+							'menu_item_parent' 	=> '0',
+							'ID'              	=> 'languages',
+							'db_id'            	=> 'languages',
+							'object'          	=> 'custom',
+							'type'          	=> 'custom',
+							'url'              	=> '#language',
+							'classes'           => array('menu-item','menu-item-type-custom','menu-item-object-custom'),
+							'target'           	=> '',
+							'xfn'           	=> '',
+							'current'         	=> false,
+						);
+						
+						$items[] = (object)$link;
+						
+						foreach( $urls as $iso => $data ){
 
-						$items .= '<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children language-switcher-menu">';
-							
-							$items .= '<a href="#language">';
-								
-								$items .= __('Language','language-switcher');
-								
-							$items .= '</a>';
-							
-							$items .= '<div class="sub-container">';
-								
-								$items .= '<ul class="sub-menu sub jq-list-menu">';
-								
-									foreach( $urls as $iso => $data ){
-
-										$items .= '<li class="menu-item menu-item-type-custom menu-item-object-custom'.( $this->language['main'] == $iso ? ' lsw-active' : '' ).'"><a href="'.$data['url'].'">'.$data['language'].'</a></li>';
-									}
-									
-								$items .= '</ul>';				
-					
-							$items .= '</div>';
-					
-						$items .= '</li>';
+							$link = array (
+								'title'            	=> $data['language'],
+								'menu_item_parent' 	=> 'languages',
+								'ID'               	=> 'lang-'.$iso,
+								'db_id'            	=> 'lang-'.$iso,
+								'object'          	=> 'custom',
+								'type'          	=> 'custom',
+								'url'              	=> $data['url'],
+								'type'          	=> 'custom',
+								'classes'           => array('menu-item','menu-item-type-custom','menu-item-object-custom'),
+								'target'           	=> '',
+								'xfn'           	=> '',
+								'current'         	=> false,
+							);
+						
+							$items[] = (object)$link;
+						}
 					}
 				}
 			}
 		}
-		
+
 		return $items;
 	}	
 	
