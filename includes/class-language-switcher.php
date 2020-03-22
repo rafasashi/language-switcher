@@ -1468,7 +1468,7 @@ class Language_Switcher {
 					
 					if( $urls = $this->get_language_urls($languages) ){
 
-						$items .= '<li class="language-switcher-menu">';
+						$items .= '<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children language-switcher-menu">';
 							
 							$items .= '<a href="#language">';
 								
@@ -1476,14 +1476,18 @@ class Language_Switcher {
 								
 							$items .= '</a>';
 							
-							$items .= '<ul class="jq-list-menu">';
-							
-								foreach( $urls as $iso => $data ){
-
-									$items .= '<li'.( $this->language['main'] == $iso ? ' class="lsw-active"' : '' ).'><a href="'.$data['url'].'">'.$data['language'].'</a></li>';
-								}
+							$items .= '<div class="sub-container">';
 								
-							$items .= '</ul>';				
+								$items .= '<ul class="sub-menu sub jq-list-menu">';
+								
+									foreach( $urls as $iso => $data ){
+
+										$items .= '<li class="menu-item menu-item-type-custom menu-item-object-custom'.( $this->language['main'] == $iso ? ' lsw-active' : '' ).'"><a href="'.$data['url'].'">'.$data['language'].'</a></li>';
+									}
+									
+								$items .= '</ul>';				
+					
+							$items .= '</div>';
 					
 						$items .= '</li>';
 					}
