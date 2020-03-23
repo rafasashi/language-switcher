@@ -156,16 +156,24 @@ class Language_Switcher {
 		
 		add_filter('locale', function ($locale){
 			
-			if( !empty($_COOKIE['lsw_main_lang']) ){
+			if( !is_admin() && !empty($_COOKIE[$this->_base . 'main_lang']) ){
 				
-				$locale = $_COOKIE['lsw_main_lang'] . '_' . strtoupper($_COOKIE['lsw_main_lang']);
+				$locale = $_COOKIE[$this->_base . 'main_lang'] . '_' . strtoupper($_COOKIE[$this->_base . 'main_lang']);
+			
+				if(!defined('WPLANG')){
+					
+					define('WPLANG',$locale);
+				}
 			}
 
 			return $locale;
-		});
+			
+		},99999999);
 		
 		$locale = apply_filters('plugin_locale', get_locale(), 'language-switcher');
-
+		
+		//switch_to_locale( $main_lang );
+		
 		load_textdomain('language-switcher', Language_Switcher::$plugin_path . 'lang/language-switcher-'.$locale.'.mo');
 		load_plugin_textdomain('language-switcher', false, Language_Switcher::$plugin_path . 'lang/');
 		
@@ -249,13 +257,18 @@ class Language_Switcher {
 
 			$url = home_url( $url );
 		}
-		elseif( strpos($url,'.') === FALSE ){
+		else{
 			
-			$url = $current_url . '/' . $url;
-		}
-		elseif( !preg_match('#^(?:f|ht)tps?:\/\/#i', $url) ){
+			$u = parse_url($url);
 			
-			$url = $proto . $url;
+			if( empty($u['host']) ){
+				
+				$url = $current_url . '/' . $url;
+			}
+			elseif( empty($u['scheme']) ){
+				
+				$url = $proto . $url;
+			}
 		}
 		
 		return $url;
@@ -316,7 +329,7 @@ class Language_Switcher {
 				$language['main'] = get_option( $this->_base . 'default_language' );
 			}			
 		}
-
+		
 		return $language;
 	}
 	
@@ -462,11 +475,11 @@ class Language_Switcher {
 						
 						if( $iso != $default_lang ){
 							
-							$language['urls'][$iso] = add_query_arg( array('lang' => $iso), home_url( $_SERVER['REQUEST_URI'] ) );
+							$language['urls'][$iso] = add_query_arg( array('lang' => $iso), $this->get_current_url() );
 						}
 						else{
 							
-							$language['urls'][$iso] = remove_query_arg( array('lang'), home_url( $_SERVER['REQUEST_URI'] ) );
+							$language['urls'][$iso] = remove_query_arg( array('lang'), $this->get_current_url() );
 						}
 					}
 				}
@@ -504,7 +517,7 @@ class Language_Switcher {
 				
 				//get current url
 				
-				$current_url = home_url( $_SERVER['REQUEST_URI'] );
+				$current_url = $this->get_current_url();
 				
 				if( !empty($this->language['urls']) ){
 				
@@ -516,7 +529,7 @@ class Language_Switcher {
 						}
 					}
 				}
-				
+			
 				//set cookies & switch language
 				
 				if( !isset($_COOKIE[$this->_base . 'main_lang']) || $_COOKIE[$this->_base . 'main_lang'] != $this->language['main'] || !isset($_COOKIE[$this->_base . 'default_lang']) || $_COOKIE[$this->_base . 'default_lang'] != $this->language['default'] ) {
@@ -986,7 +999,7 @@ class Language_Switcher {
 					
 					$url = add_query_arg( array(
 						'lang' => $this->items[$term_id][ $this->_base . 'main_language'],
-					), home_url( $_SERVER['REQUEST_URI'] ) );
+					), $this->get_current_url() );
 					
 					$content =  '<a href="' . $url .'">';	
 					
@@ -1312,6 +1325,13 @@ class Language_Switcher {
 		do_action('lsw_post_type_edited',$post_id);
 	}
 	
+	public function get_current_url(){
+		
+		global $wp;
+		
+		return home_url(add_query_arg(array(), $wp->request));
+	}
+	
 	public function get_language_urls($languages){
 		
 		$urls = array();
@@ -1338,12 +1358,12 @@ class Language_Switcher {
 						}
 						else{
 							
-							$urls[$iso]['url'] = add_query_arg( array('lang' => $iso), home_url( $_SERVER['REQUEST_URI'] ) );
+							$urls[$iso]['url'] = add_query_arg( array('lang' => $iso), $this->get_current_url() );
 						}
 					}
 					else{
 						
-						$urls[$iso]['url'] = home_url( $_SERVER['REQUEST_URI'] );
+						$urls[$iso]['url'] = $this->get_current_url();
 					}
 				}
 			}
