@@ -215,6 +215,13 @@ class Language_Switcher_Settings {
 				),
 				*/
 				array(
+					'id' 			=> 'disable_session',
+					'label'			=> __( 'Disable Session' , 'language-switcher' ),
+					'description'	=> 'To detect and set the language during the first request the switcher uses session_start() but it can be disabled if the server is not compatible.',
+					'type'			=> 'checkbox',
+					'default'		=> '',
+				),
+				array(
 					'id' 			=> 'disable_posts_query_filter',
 					'label'			=> __( 'Disable Posts Query Filter' , 'language-switcher' ),
 					'description'	=> '',

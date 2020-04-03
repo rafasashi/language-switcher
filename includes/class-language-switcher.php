@@ -21,7 +21,6 @@ class Language_Switcher {
 	 * @since   1.0.0
 	 */
 	public $filesystem = null;
-	public $notices = null;
 	public $settings = null;
 
 	/**
@@ -120,7 +119,7 @@ class Language_Switcher {
 		$this->_version = $version;
 		$this->_token 	= 'language-switcher';
 		$this->_base 	= 'lsw_';
-		
+
 		// Load plugin environment variables
 		
 		$this->file 		= $file;
@@ -203,6 +202,39 @@ class Language_Switcher {
 
 		
 	} // End __construct ()
+	
+	public function session_start() {
+			
+		if( get_option($this->_base . 'disable_session') == 'on' ) return false;
+			
+		if (!@session_start()) return false;
+
+		if (!isset($_SESSION['__validated'])) {
+			
+			$_SESSION['__validated'] = 1;
+
+			@session_write_close();
+
+			unset($_SESSION['__validated']);
+
+			@session_start(['read_and_close' => true]);
+
+			if (!isset($_SESSION['__validated'])) {
+	
+				return false;
+			} 
+		}
+		
+		add_filter('shutdown',function(){
+			
+			if (isset($_SESSION['__validated'])) {
+				
+				@session_write_close();
+			}
+		});
+
+		return true;
+	}
    	
 	public function init_language(){
 		
@@ -277,7 +309,9 @@ class Language_Switcher {
 	
 	public function get_post_language($post_id){
 		
-		if( !$language = get_post_meta( $post_id, $this->_base . 'language_switcher' ,true )){
+		$language = get_post_meta( $post_id, $this->_base . 'language_switcher' ,true );
+		
+		if( empty($language) || !is_array($language) ){
 			
 			$language = array();
 		}
@@ -430,7 +464,7 @@ class Language_Switcher {
 	public function get_current_language(){
 
 		if( empty($this->language) ){
-
+			
 			$default_lang = $this->get_default_language();
 			
 			$default_urls = get_option( $this->_base . 'default_language_urls' );
@@ -530,67 +564,67 @@ class Language_Switcher {
 						}
 					}
 				}
-	
-				// start session
-					
-				if (session_status() == PHP_SESSION_NONE) {
 				
-					session_start();
-				}
+				if( !is_admin() ){
+					
+					// start session
+					
+					$this->session_start();
 			
-				// set cookies & switch language
-				
-				if( !isset($_COOKIE[$this->_base . 'main_lang']) || $_COOKIE[$this->_base . 'main_lang'] != $this->language['main'] || !isset($_COOKIE[$this->_base . 'default_lang']) || $_COOKIE[$this->_base . 'default_lang'] != $this->language['default'] ) {
+					// set cookies & switch language
 					
-					//set cookies
-					
-					setcookie($this->_base . 'main_lang', $this->language['main'], 0, '/');
-					
-					setcookie($this->_base . 'default_lang', $this->language['default'], 0, '/');
-					
-					//prevent redirecting search engine and crawlers
-					
-					if( empty($_SESSION[$this->_base . 'redirect']) ){
-
-						// redirect language url
+					if( !isset($_COOKIE[$this->_base . 'main_lang']) || $_COOKIE[$this->_base . 'main_lang'] != $this->language['main'] || !isset($_COOKIE[$this->_base . 'default_lang']) || $_COOKIE[$this->_base . 'default_lang'] != $this->language['default'] ) {
 						
-						if( !empty($this->language['urls'][$main_lang]) && $current_url != $this->language['urls'][$main_lang] ){
-							
-							$_SESSION[$this->_base . 'redirect'] = $this->language['urls'][$main_lang];
-							
-							wp_redirect( $this->language['urls'][$main_lang] );
-							exit;						
-						}
-						elseif( strpos($this->locale,$main_lang.'_') !== 0 ){
-							
-							$_SESSION[$this->_base . 'redirect'] = $current_url;
+						//set cookies
+						
+						setcookie($this->_base . 'main_lang', $this->language['main'], 0, '/');
+						
+						setcookie($this->_base . 'default_lang', $this->language['default'], 0, '/');
+						
+						//prevent redirecting search engine and crawlers
+						
+						if( !empty($_SESSION['__validated']) && empty($_SESSION[$this->_base . 'redirect']) ){
 
-							//var_dump($_SESSION);exit;
+							// redirect language url
 							
-							wp_redirect( $current_url );
-							exit;
+							if( !empty($this->language['urls'][$main_lang]) && $current_url != $this->language['urls'][$main_lang] ){
+								
+								$_SESSION[$this->_base . 'redirect'] = $this->language['urls'][$main_lang];
+								
+								wp_redirect( $this->language['urls'][$main_lang] );
+								exit;						
+							}
+							elseif( strpos($this->locale,$main_lang.'_') !== 0 ){
+								
+								$_SESSION[$this->_base . 'redirect'] = $current_url;
+
+								//var_dump($_SESSION);exit;
+								
+								wp_redirect( $current_url );
+								exit;
+							}
 						}
 					}
-				}
-				elseif( $default_lang != $main_lang && !empty($this->language['urls'][$main_lang]) && $current_url != $this->language['urls'][$main_lang] ){
+					elseif( $default_lang != $main_lang && !empty($this->language['urls'][$main_lang]) && $current_url != $this->language['urls'][$main_lang] ){
+							
+						// redirect language url
+							
+						wp_redirect( $this->language['urls'][$main_lang] );
+						exit;						
+					}			
+					elseif( !empty( $this->language['main'] ) ){
 						
-					// redirect language url
+						// switch locale
+
+						switch_to_locale( $this->language['main'] . '_' . strtoupper($this->language['main']) );
+					}
+
+					if( !empty($_SESSION[$this->_base . 'redirect']) ){
 						
-					wp_redirect( $this->language['urls'][$main_lang] );
-					exit;						
-				}			
-				elseif( !empty( $this->language['main'] ) ){
-					
-					// switch locale
-
-					switch_to_locale( $this->language['main'] . '_' . strtoupper($this->language['main']) );
-				}
-
-				if( !empty($_SESSION[$this->_base . 'redirect']) ){
-					
-					// flush redirect session
-					
-					$_SESSION[$this->_base . 'redirect'] = '';
+						// flush redirect session
+						
+						$_SESSION[$this->_base . 'redirect'] = '';
+					}
 				}
 			}
 		}
@@ -602,11 +636,11 @@ class Language_Switcher {
 		
 		$has_language = true;
 		
-		if( empty($_REQUEST['lang']) && !is_archive() && !is_front_page() && !is_home() && ( !isset($query->query['post_type']) || !is_array($query->query['post_type']) || !in_array($query->query['post_type'],$this->get_active_post_types() ) ) ){
+		if( empty($_REQUEST['lang']) && !is_archive() && !is_home() && ( !is_object($query) || empty($query->query) || !isset($query->query['post_type']) || !is_array($query->query['post_type']) || !in_array($query->query['post_type'],$this->get_active_post_types() ) ) ){
 			
 			$has_language = false;
 		}
-
+		
 		if($has_language){
 			
 			$language = array();

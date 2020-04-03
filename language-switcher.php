@@ -3,11 +3,11 @@
  * Plugin Name: Language Switcher
  * Plugin URI: https://code.recuweb.com/download/language-switcher/
  * Description: Add a Language Switcher to Post Types and Taxonomies
- * Version: 3.1.7.3
+ * Version: 3.1.7.9
  * Author: Rafasashi
  * Author URI: https://code.recuweb.com/about-us/
  * Requires at least: 4.6
- * Tested up to: 5.3
+ * Tested up to: 5.4
  *
  * Text Domain: language-switcher
  * Domain Path: /lang/
@@ -18,7 +18,9 @@
  */
 
 	if(!defined('ABSPATH')) exit; // Exit if accessed directly
- 
+	
+	if( defined('REST_REQUEST') && REST_REQUEST === true ) return; // Disabled for REST API
+	
 	/**
 	* Minimum version required
 	*
@@ -33,7 +35,6 @@
 	// Load plugin libraries
 	
 	require_once( 'includes/lib/class-language-switcher-admin-api.php' );
-	require_once( 'includes/lib/class-language-switcher-admin-notices.php' );
 	require_once( 'includes/lib/class-language-switcher-post-type.php' );
 	require_once( 'includes/lib/class-language-switcher-taxonomy.php' );
 	
@@ -50,12 +51,7 @@
 	function Language_Switcher() {
 				
 		$instance = Language_Switcher::instance( __FILE__, time() );	
-		
-		if ( is_null( $instance->notices ) ) {
-			
-			$instance->notices = Language_Switcher_Admin_Notices::instance( $instance );
-		}
-		
+				
 		if ( is_null( $instance->settings ) ) {
 			
 			$instance->settings = Language_Switcher_Settings::instance( $instance );
