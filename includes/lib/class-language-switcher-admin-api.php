@@ -94,7 +94,9 @@ class Language_Switcher_Admin_API {
 		$html = '';
 
 		switch( $field['type'] ) {
-
+			
+			case 'none':
+			break;
 			case 'text':
 			case 'url':
 			case 'email':
@@ -456,13 +458,25 @@ class Language_Switcher_Admin_API {
 			break;
 			
 			case 'radio':
+				
 				foreach ( $field['options'] as $k => $v ) {
+					
 					$checked = false;
+					
 					if ( $k == $data ) {
+						
 						$checked = true;
 					}
-					$html .= '<label for="' . esc_attr( $field['id'] . '_' . $k ) . '"><input type="radio" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" /> ' . $v . '</label> ';
+					
+					$html .= '<label style="display:block;margin-bottom:5px;" for="' . esc_attr( $field['id'] . '_' . $k ) . '">';
+						
+						$html .= '<input type="radio" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" /> ';
+							
+						$html .= $v;
+							
+					$html .= '</label> ';
 				}
+				
 			break;
 
 			case 'select':
@@ -488,6 +502,14 @@ class Language_Switcher_Admin_API {
 				}
 				$html .= '</select> ';
 			break;
+			
+			case 'code':
+				$html .= '<code id="' . esc_attr( $field['id'] ) . '" style="height:100px;overflow-x:hidden;overflow-y:scroll;display:block;background:#fff;border:1px solid #eee;border-radius:4px;padding:7px;">';
+					
+					$html .= $data;
+					
+				$html .= '</code>';
+			break;
 
 			case 'image':
 				$image_thumb = '';
@@ -511,7 +533,7 @@ class Language_Switcher_Admin_API {
 		}
 
 		switch( $field['type'] ) {
-
+			
 			case 'checkbox_multi':
 			case 'radio':
 			case 'select_multi':

@@ -1,14 +1,14 @@
 === Language Switcher ===
 Contributors: rafasashi
 Tags: language, languages, switcher, internationalization, internationalisation, multi-language, multilanguage, translation
-Donate link: https://code.recuweb.com/get/language-switcher/
+Donate link: https://code.recuweb.com/get/language-switcher-everywhere/
 Requires at least: 4.6
 Tested up to: 5.4
-Stable tag: 3.1.7.9
+Stable tag: 3.1.9
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
-Add a Language Switcher to Post Types and Taxonomies.
+Add a Language Switcher to Menus, Post Types and Taxonomies.
 
 == Description ==
 
@@ -16,22 +16,25 @@ Language Switcher allows you to map urls of alternative languages for Post Types
 
 = Free Features =
 
-– STANDALONE - No Wordpress Multisite required
-– MIXED SOURCES - map internal or external urls
-– POST TYPE LANGUAGE - Add a main language selector to post types and map urls of alternative languages
-– TAXONOMY LANGUAGE  - Add a main language selector to terms and map urls of alternative languages
-– HREFLANG LINKS - Add hreflang links into the head of each page
-– MENU LANGUAGE - Add a main language selector to the menu settings and switch the menu accordingly
-– LANGUAGE FILTERS - Filter items by language in the main WP_Query of archive pages
-– LANGUAGE WIDGET - Add the language switcher with the widget
-– LANGUAGE SHORTCODE - Add the language switcher anywhere with the shortcode [language-switcher]
-– LANGUAGE MENUS - Add the language switcher to your navigation menus
+* STANDALONE – No Wordpress Multisite required
+* MIXED SOURCES – map internal or external urls
+* POST TYPE LANGUAGE – Add a main language selector to post types and map urls of alternative languages
+* TAXONOMY LANGUAGE  – Add a main language selector to terms and map urls of alternative languages
+* HREFLANG LINKS – Add hreflang links into the head of each page and improve the SEO
+* MENU LANGUAGE – Add a main language selector to the menu settings and switch the menu accordingly
+* LANGUAGE FILTERS – Filter items by language in the main WP_Query of archive pages
+* LANGUAGE WIDGET – Add the language switcher with the widget
+* LANGUAGE SHORTCODE – Add the language switcher anywhere with the shortcode [language-switcher]
+* LANGUAGE MENUS – Add the language switcher to your navigation menus
+* SWITCHER TITLE – Select from multiple options to customize the switcher title
 
 = Addon Features =
  
-– [LANGUAGE EVERYWHERE](https://code.recuweb.com/get/language-switcher-everywhere/) –  Enable language switcher for custom post types and taxonomies such as WooCommerce Product, Order, Category and Tags
+* [LANGUAGE EVERYWHERE](https://code.recuweb.com/get/language-switcher-everywhere/) –  Enable language switcher for custom post types and taxonomies such as WooCommerce Product, Order, Category and Tags
  
-More information about [Language Switcher](https://code.recuweb.com/get/language-switcher/)
+= Compatibility =
+
+* Polylang
 
 = Localization =
 

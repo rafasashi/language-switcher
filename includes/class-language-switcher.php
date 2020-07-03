@@ -254,10 +254,12 @@ class Language_Switcher {
 			add_filter('get_terms_args', array( $this, 'query_language_taxonomies'), 10, 2 );
 		}
 		
+		/*
 		if( get_option($this->_base . 'disable_comments_query_filter') != 'on' ){
 		
 			add_filter('pre_get_comments', array( $this, 'query_language_comments') );
 		}
+		*/
 		
 		//append urls
 		
@@ -320,8 +322,14 @@ class Language_Switcher {
 			
 			$language['urls'] = array();
 		}
-
-		if( !isset($language['main']) ){
+		
+		if( !empty($_COOKIE['pll_language']) ){
+			
+			// polylang compatibility
+			
+			$language['main'] = $_COOKIE['pll_language'];
+		}
+		elseif( !isset($language['main']) ){
 			
 			$language['main'] = get_post_meta( $post_id, $this->_base . 'main_language' ,true );
 		}
@@ -846,11 +854,11 @@ class Language_Switcher {
 				
 				if( $item->type == 'post_type' ){
 					
-					$language = $this->get_post_language($item->object_id);
+					$language = (array) $this->get_post_language($item->object_id);
 				}
 				elseif( $item->type == 'taxonomy' ){
 					
-					$language = get_term_meta( $item->object_id, 'language_switcher' ,true );
+					$language = (array) get_term_meta( $item->object_id, 'language_switcher' ,true );
 				}
 				
 				if( empty($language['main']) ){
@@ -1158,15 +1166,17 @@ class Language_Switcher {
 				
 				if( $data['type'] == 'living' && ( $data['scope'] == 'individual' || $data['scope'] == 'macrolanguage' ) ){
 					
-					$iso = $data['iso_639_1'];
+					$iso 	= $data['iso_639_1'];
 					
-					$this->languages[$iso]['iso'] = '<span class="lsw-iso">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span>';
+					$flag 	= '<span class="flag flag-'.$iso.'"></span>';
 					
-					$this->languages[$iso]['full'] = '<span class="lsw-iso">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span> <span class="lsw-language">' . ucfirst( $data['name'] ) . '</span> <i class="lsw-native">(' . $data['native'] . ')</i>';
+					$this->languages[$iso]['iso'] 		= $flag . '<span class="lsw-iso">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span>';
+					
+					$this->languages[$iso]['full'] 		= $flag . '<span class="lsw-iso">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span> <span class="lsw-language">' . ucfirst( $data['name'] ) . '</span> <i class="lsw-native">(' . $data['native'] . ')</i>';
 				
-					$this->languages[$iso]['language'] = '<span class="lsw-language">' . ucfirst( $data['name'] ) . '</span>';
+					$this->languages[$iso]['language'] 	= $flag . '<span class="lsw-language">' . ucfirst( $data['name'] ) . '</span>';
 				
-					$this->languages[$iso]['native'] = '<span class="lsw-language">' . ucfirst( $data['native'] ) . '</span>';
+					$this->languages[$iso]['native'] 	= $flag . '<span class="lsw-language">' . ucfirst( $data['native'] ) . '</span>';
 				} 
 			}
 			
@@ -1408,13 +1418,13 @@ class Language_Switcher {
 	public function get_language_switcher_shortcode( $atts ){
 		
 		$display 	= ( !empty($atts['display']) ? $atts['display'] : 'button' );
-		$show 		= ( !empty($atts['show']) ? $atts['show'] : 'full' );
+		$show 		= ( !empty($atts['show']) ? $atts['show'] : 'title_option' );
 		$icon 		= ( !empty($atts['icon']) ? $atts['icon'] : '' );
 		
 		return $this->get_language_switcher( $display, $show, $icon );
 	}
 		
-	public function get_language_switcher( $display = 'button', $show = 'full', $icon = '' ){
+	public function get_language_switcher( $display = 'button', $show = 'title_option', $icon = '' ){
 		
 		// get languages
 		
@@ -1430,18 +1440,21 @@ class Language_Switcher {
 		
 		if( !empty($show) && $show!='none' ){
 		
-			$title = __('Language','language-switcher');
+			$title = $this->get_switcher_title($languages);
 			
-			foreach( $urls as $iso => $data ){
+			if( $show!='title_option' ){
 				
-				if( $this->language['main'] == $iso ){
+				foreach( $urls as $iso => $data ){
 					
-					if( !empty($languages[$iso][$show]) ){
-					
-						$title = $languages[$iso][$show];
+					if( $this->language['main'] == $iso ){
+						
+						if( !empty($languages[$iso][$show]) ){
+						
+							$title = $languages[$iso][$show];
+						}
+						
+						break;
 					}
-					
-					break;
 				}
 			}
 		}
@@ -1522,7 +1535,7 @@ class Language_Switcher {
 					if( $urls = $this->get_language_urls($languages) ){
 						
 						$link = array (
-							'title'            	=> __('Language','language-switcher'),
+							'title'            	=> $this->get_switcher_title($languages),
 							'menu_item_parent' 	=> '0',
 							'ID'              	=> 'languages',
 							'db_id'            	=> 'languages',
@@ -1535,7 +1548,7 @@ class Language_Switcher {
 							'current'         	=> false,
 						);
 						
-						$items[] = (object)$link;
+						$items[] = (object) $link;
 						
 						foreach( $urls as $iso => $data ){
 
@@ -1554,7 +1567,7 @@ class Language_Switcher {
 								'current'         	=> false,
 							);
 						
-							$items[] = (object)$link;
+							$items[] = (object) $link;
 						}
 					}
 				}
@@ -1563,6 +1576,45 @@ class Language_Switcher {
 
 		return $items;
 	}	
+	
+	public function get_switcher_title($languages){
+		
+		$title = __('Language');
+		
+		$option = get_option( $this->_base . 'switcher_title', 'selected_lang' );
+		
+		if( $option == 'selected_lang' || $option == 'selected_iso' || $option == 'selected_nat' ){
+			
+			$language = $this->get_current_language();
+			
+			$main_lang = $language['main'];
+			
+			if( !empty($languages[$main_lang]) ){
+				
+				if( $option == 'selected_iso' ){
+					
+					$title = $languages[$main_lang]['iso'];
+				}
+				elseif( $option == 'selected_nat' ){
+					
+					$title = $languages[$main_lang]['native'];
+				}
+				else{
+					
+					$title = $languages[$main_lang]['full'];
+				}
+			}
+		}
+		elseif( $option == 'custom_title' ){
+			 
+			if( $custom_title = get_option( $this->_base . 'custom_title' ) ){
+				
+				$title = __($custom_title,'language-switcher');
+			}
+		}
+		
+		return ucfirst($title);
+	}
 	
 	public function add_switchers(){
 		
