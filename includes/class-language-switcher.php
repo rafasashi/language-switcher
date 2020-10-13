@@ -12,7 +12,8 @@ class Language_Switcher {
 	 */
 	private static $_instance = null;
 	
-	public $_dev = null;
+	public $_base 	= null;
+	public $_prefix = null;
 
 	/**
 	 * Settings class object
@@ -119,6 +120,7 @@ class Language_Switcher {
 		$this->_version = $version;
 		$this->_token 	= 'language-switcher';
 		$this->_base 	= 'lsw_';
+		$this->_prefix	= $this->get_cookie_prefix();
 
 		// Load plugin environment variables
 		
@@ -156,12 +158,9 @@ class Language_Switcher {
 		
 		add_filter('locale', function ($locale){
 			
-			//global $wpdb;
-			//dump($wpdb->prefix);
-			
-			if( !is_admin() && !empty($_COOKIE[$this->_base . 'main_lang']) ){
+			if( !is_admin() && !empty($_COOKIE[$this->_prefix . 'm']) ){
 				
-				$locale = $_COOKIE[$this->_base . 'main_lang'] . '_' . strtoupper($_COOKIE[$this->_base . 'main_lang']);
+				$locale = $_COOKIE[$this->_prefix . 'm'] . '_' . strtoupper($_COOKIE[$this->_prefix . 'm']);
 			
 				if(!defined('WPLANG')){
 					
@@ -205,6 +204,18 @@ class Language_Switcher {
 
 		
 	} // End __construct ()
+	
+	public function get_cookie_prefix(){
+		
+		if( is_null($this->_prefix) ){
+		
+			global $wpdb;
+		
+			$this->_prefix = $this->_base . hash('crc32', $wpdb->prefix ) . '_';
+		}
+		
+		return $this->_prefix;
+	}
 		
 	public function is_session_started(){
 		
@@ -463,9 +474,9 @@ class Language_Switcher {
 	
 	public function get_default_language(){
 		
-		if( !empty($_COOKIE[$this->_base . 'default_lang']) ){
+		if( !empty($_COOKIE[$this->_prefix . 'd']) ){
 			
-			$default_lang = $_COOKIE[$this->_base . 'default_lang'];
+			$default_lang = $_COOKIE[$this->_prefix . 'd'];
 		}
 		else{
 			
@@ -601,13 +612,13 @@ class Language_Switcher {
 			
 					// set cookies & switch language
 					
-					if( !isset($_COOKIE[$this->_base . 'main_lang']) || $_COOKIE[$this->_base . 'main_lang'] != $this->language['main'] || !isset($_COOKIE[$this->_base . 'default_lang']) || $_COOKIE[$this->_base . 'default_lang'] != $this->language['default'] ) {
+					if( !isset($_COOKIE[$this->_prefix . 'm']) || $_COOKIE[$this->_prefix . 'm'] != $this->language['main'] || !isset($_COOKIE[$this->_prefix . 'd']) || $_COOKIE[$this->_prefix . 'd'] != $this->language['default'] ) {
 						
 						//set cookies
 						
-						setcookie($this->_base . 'main_lang', $this->language['main'], 0, '/');
+						setcookie($this->_prefix . 'm', $this->language['main'], 0, '/');
 						
-						setcookie($this->_base . 'default_lang', $this->language['default'], 0, '/');
+						setcookie($this->_prefix . 'd', $this->language['default'], 0, '/');
 						
 						//prevent redirecting search engine and crawlers
 						
@@ -707,12 +718,12 @@ class Language_Switcher {
 					$language['default'] = $default_lang;
 				}
 			}
-			elseif( !empty($_COOKIE[$this->_base . 'main_lang']) ){
+			elseif( !empty($_COOKIE[$this->_prefix . 'm']) ){
 				
 				if( !isset($query->query['post_type']) || $query->query['post_type'] != 'nav_menu_item' ){
 				
-					$language['main'] 		= $_COOKIE[$this->_base . 'main_lang'];
-					$language['default'] 	= ( !empty($_COOKIE[$this->_base . 'default_lang']) ? $_COOKIE[$this->_base . 'default_lang'] : $default_lang );
+					$language['main'] 		= $_COOKIE[$this->_prefix . 'm'];
+					$language['default'] 	= ( !empty($_COOKIE[$this->_prefix . 'd']) ? $_COOKIE[$this->_prefix . 'd'] : $default_lang );
 				}
 			}
 			
@@ -776,12 +787,12 @@ class Language_Switcher {
 			
 			$default_lang = $this->get_default_language();
 		
-			if( !empty($_COOKIE[$this->_base . 'main_lang']) ){
+			if( !empty($_COOKIE[$this->_prefix . 'm']) ){
 				
-				if( $_COOKIE[$this->_base . 'main_lang'] != $default_lang ){
+				if( $_COOKIE[$this->_prefix . 'm'] != $default_lang ){
 					
 					$args['meta_key'] 	= $this->_base . 'main_language';
-					$args['meta_value'] = $_COOKIE[$this->_base . 'main_lang'];					
+					$args['meta_value'] = $_COOKIE[$this->_prefix . 'm'];					
 				}
 				else{
 
@@ -793,7 +804,7 @@ class Language_Switcher {
 						),
 						array(
 						 'key' 		=> $this->_base . 'main_language',
-						 'value' 	=> $_COOKIE[$this->_base . 'main_lang']
+						 'value' 	=> $_COOKIE[$this->_prefix . 'm']
 						)
 					);
 				}
@@ -813,10 +824,10 @@ class Language_Switcher {
 			'default'	=> $default_lang,
 		);
 		
-		if( !empty($_COOKIE[$this->_base . 'main_lang']) ){
+		if( !empty($_COOKIE[$this->_prefix . 'm']) ){
 			
-			$language['main'] = $_COOKIE[$this->_base . 'main_lang'];
-			$language['default'] = ( !empty($_COOKIE[$this->_base . 'default_lang']) ? $_COOKIE[$this->_base . 'default_lang'] : $default_lang );
+			$language['main'] = $_COOKIE[$this->_prefix . 'm'];
+			$language['default'] = ( !empty($_COOKIE[$this->_prefix . 'd']) ? $_COOKIE[$this->_prefix . 'd'] : $default_lang );
 		}	
 		
 		if( $language['main'] == $language['default'] ){

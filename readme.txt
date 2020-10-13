@@ -3,8 +3,8 @@ Contributors: rafasashi
 Tags: language, languages, switcher, internationalization, internationalisation, multi-language, multilanguage, translation
 Donate link: https://code.recuweb.com/get/language-switcher-everywhere/
 Requires at least: 4.6
-Tested up to: 5.4
-Stable tag: 3.1.9.2
+Tested up to: 5.5
+Stable tag: 3.2.1
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
@@ -13,6 +13,10 @@ Add a Language Switcher to Menus, Post Types and Taxonomies.
 == Description ==
 
 Language Switcher allows you to map urls of alternative languages for Post Types and Taxonomies. Additionally it allows you to filter archive pages by language.
+
+= Support Forum =
+
+For quicker support on this plugin go to: [https://code.recuweb.com/support/forum/wordpress-plugins/language-switcher/](https://code.recuweb.com/support/forum/wordpress-plugins/language-switcher/)
 
 = Free Features =
 
@@ -64,18 +68,6 @@ The manual installation method involves downloading my plugin and uploading it t
 1. Download the plugin file to your computer and unzip it
 2. Using an FTP program, or your hosting control panel, upload the unzipped plugin folder to your WordPress installation's wp-content/plugins/ directory.
 3. Activate the plugin from the Plugins menu within the WordPress admin.
-
-= Switch Language before any plugins =
-
-If the Language Switcher is loaded after other Plugins add the following code to wp-config.php before requesting wp-settings.php
-
-`if( !empty($_COOKIE['lsw_main_lang']) ){
-
-	$locale = $_COOKIE['lsw_main_lang'] . '_' . strtoupper($_COOKIE['lsw_main_lang']);
-
-	if(!defined('WPLANG'))
-		define ('WPLANG', $locale);
-}`
 
 = Upgrading =
 
