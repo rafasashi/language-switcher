@@ -127,7 +127,7 @@ class Language_Switcher {
 		$this->views   		= trailingslashit( $this->dir ) . 'views';
 		$this->lang   		= trailingslashit( $this->dir ) . 'lang';
 		$this->assets_dir 	= trailingslashit( $this->dir ) . 'assets';
-		$this->assets_url 	= esc_url( trailingslashit( plugins_url( '/assets/', $this->file ) ) );
+		$this->assets_url 	= home_url( trailingslashit( str_replace( ABSPATH, '', $this->dir ))  . 'assets/' );
 
 		$this->script_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
@@ -155,6 +155,9 @@ class Language_Switcher {
 		/* Localisation */
 		
 		add_filter('locale', function ($locale){
+			
+			//global $wpdb;
+			//dump($wpdb->prefix);
 			
 			if( !is_admin() && !empty($_COOKIE[$this->_base . 'main_lang']) ){
 				
@@ -202,12 +205,29 @@ class Language_Switcher {
 
 		
 	} // End __construct ()
+		
+	public function is_session_started(){
+		
+		if ( php_sapi_name() !== 'cli' ) {
+			
+			if ( version_compare(phpversion(), '5.4.0', '>=') ) {
+				
+				return session_status() === PHP_SESSION_ACTIVE ? TRUE : FALSE;
+			} 
+			else {
+				
+				return session_id() === '' ? FALSE : TRUE;
+			}
+		}
+		
+		return FALSE;
+	}
 	
 	public function session_start() {
-			
+		
 		if( get_option($this->_base . 'disable_session') == 'on' ) return false;
 			
-		if (!@session_start()) return false;
+		if (!$this->is_session_started() && !@session_start()) return false;
 
 		if (!isset($_SESSION['__validated'])) {
 			

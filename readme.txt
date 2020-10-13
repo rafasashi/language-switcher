@@ -4,7 +4,7 @@ Tags: language, languages, switcher, internationalization, internationalisation,
 Donate link: https://code.recuweb.com/get/language-switcher-everywhere/
 Requires at least: 4.6
 Tested up to: 5.4
-Stable tag: 3.1.9
+Stable tag: 3.1.9.2
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
@@ -27,6 +27,7 @@ Language Switcher allows you to map urls of alternative languages for Post Types
 * LANGUAGE SHORTCODE – Add the language switcher anywhere with the shortcode [language-switcher]
 * LANGUAGE MENUS – Add the language switcher to your navigation menus
 * SWITCHER TITLE – Select from multiple options to customize the switcher title
+* COUNTRY FLAGS – Add country flags manually to your Theme Additional CSS or style.css
 
 = Addon Features =
  
