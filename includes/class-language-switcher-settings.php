@@ -184,7 +184,7 @@ class Language_Switcher_Settings {
 					'description'	=> '',
 					'type'			=> 'language_checkbox_multi',
 					'data'			=> $this->parent->get_active_languages(),					
-					'options'		=> $this->parent->get_languages(),
+					'options'		=> $this->parent->get_language_labels(),
 					'default'		=> '',
 				),		
 			) 

@@ -100,6 +100,7 @@ class Language_Switcher {
 	public $taxonomies 	= array();
 	
 	public $locale;
+	public $locales;
 	public $language;
 	public $languages;
 	
@@ -116,7 +117,7 @@ class Language_Switcher {
 	public $importer;
 	 
 	public function __construct ( $file = '', $version = '1.0.0' ) {
-	
+		
 		$this->_version = $version;
 		$this->_token 	= 'language-switcher';
 		$this->_base 	= 'lsw_';
@@ -159,8 +160,8 @@ class Language_Switcher {
 		add_filter('locale', function ($locale){
 			
 			if( !is_admin() && !empty($_COOKIE[$this->_prefix . 'm']) ){
-				
-				$locale = $_COOKIE[$this->_prefix . 'm'] . '_' . strtoupper($_COOKIE[$this->_prefix . 'm']);
+			
+				$locale = $this->get_locale_by_code($_COOKIE[$this->_prefix . 'm']);
 			
 				if(!defined('WPLANG')){
 					
@@ -480,23 +481,23 @@ class Language_Switcher {
 		}
 		else{
 			
-			$default_lang = get_option('WPLANG');
+			$default_locale = get_option('WPLANG');
 			
-			if( empty($default_lang) ){
+			if( empty($default_locale) ){
 				
 				if( defined('WPLANG') && !empty(WPLANG) ){
 					
-					$default_lang = WPLANG;
+					$default_locale = WPLANG;
 				}
 				else{
 					
-					$default_lang = get_locale();
+					$default_locale = get_locale();
 				}
 			}
+			
+			$default_lang = $this->get_code_by_locale($default_locale);
 		}
 		
-		$default_lang = substr( $default_lang, 0, 2 );
-
 		return $default_lang;	
 	}
 
@@ -589,6 +590,8 @@ class Language_Switcher {
 				
 				$main_lang = $this->language['main'];
 				
+				$locale = $this->get_locale_by_code($main_lang);
+				
 				//get current url
 				
 				$current_url = $this->get_current_url();
@@ -633,7 +636,7 @@ class Language_Switcher {
 								wp_redirect( $this->language['urls'][$main_lang] );
 								exit;						
 							}
-							elseif( strpos($this->locale,$main_lang.'_') !== 0 ){
+							elseif( $this->locale != $locale ){
 								
 								$_SESSION[$this->_base . 'redirect'] = $current_url;
 
@@ -654,8 +657,10 @@ class Language_Switcher {
 					elseif( !empty( $this->language['main'] ) ){
 						
 						// switch locale
+						
+						$locale = $this->get_locale_by_code($this->language['main']);
 
-						switch_to_locale( $this->language['main'] . '_' . strtoupper($this->language['main']) );
+						switch_to_locale( $locale );
 					}
 
 					if( !empty($_SESSION[$this->_base . 'redirect']) ){
@@ -1187,28 +1192,64 @@ class Language_Switcher {
 		return $this->taxonomies;
 	}
 	
-	public function get_languages(){
+	public function get_locales(){
+		
+		if(	is_null( $this->locales ) ){
+		
+			require_once( $this->lang . '/languages.php' );
+		
+			$this->locales = $locales;
+		}
+		
+		return $this->locales;
+	}
+	
+	public function get_locale_by_code($code){
+		
+		$locales = $this->get_locales();
+		
+		foreach( $locales as $locale ){
+			
+			if( $locale['code'] == $code ){
+				
+				return $locale['locale'];
+			}
+		}
+		
+		return false;
+	}
+	
+	public function get_code_by_locale($locale){
+		
+		$locales = $this->get_locales();
+		
+		if( isset($locales[$locale]) ){
+			
+			return $locales[$locale]['code'];
+		}
+		
+		return false;
+	} 
+	
+	public function get_language_labels(){
 		
 		if(	is_null( $this->languages ) ){
 			
-			require_once( $this->lang . '/languages.php' );
+			$locales = $this->get_locales();
 			
-			foreach( $languages as $iso => $data ){
+			foreach( $locales as $locale => $data ){
 				
-				if( $data['type'] == 'living' && ( $data['scope'] == 'individual' || $data['scope'] == 'macrolanguage' ) ){
+				$code 	= $data['code'];
 					
-					$iso 	= $data['iso_639_1'];
+				$flag 	= '<span class="flag flag-'.$code.'"></span>';
 					
-					$flag 	= '<span class="flag flag-'.$iso.'"></span>';
-					
-					$this->languages[$iso]['iso'] 		= $flag . '<span class="lsw-iso">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span>';
-					
-					$this->languages[$iso]['full'] 		= $flag . '<span class="lsw-iso">' . ucfirst(__($data['iso_639_1'],'wordpress')) . '</span> <span class="lsw-language">' . ucfirst( $data['name'] ) . '</span> <i class="lsw-native">(' . $data['native'] . ')</i>';
+				$this->languages[$code]['iso'] 		= $flag . '<span class="lsw-iso">' . ucfirst(__($code,'wordpress')) . '</span>';
 				
-					$this->languages[$iso]['language'] 	= $flag . '<span class="lsw-language">' . ucfirst( $data['name'] ) . '</span>';
+				$this->languages[$code]['full'] 	= $flag . '<span class="lsw-iso">' . ucfirst(__($code,'wordpress')) . '</span> <span class="lsw-language">' . ucfirst( $data['name'] ) . '</span> <i class="lsw-native">(' . $data['native'] . ')</i>';
 				
-					$this->languages[$iso]['native'] 	= $flag . '<span class="lsw-language">' . ucfirst( $data['native'] ) . '</span>';
-				} 
+				$this->languages[$code]['language'] = $flag . '<span class="lsw-language">' . ucfirst( $data['name'] ) . '</span>';
+				
+				$this->languages[$code]['native'] 	= $flag . '<span class="lsw-language">' . ucfirst( $data['native'] ) . '</span>';
 			}
 			
 			unset($languages);
@@ -1459,7 +1500,7 @@ class Language_Switcher {
 		
 		// get languages
 		
-		$languages = $this->get_languages();
+		$languages = $this->get_language_labels();
 		
 		// get language urls
 		
@@ -1559,7 +1600,7 @@ class Language_Switcher {
 					
 					// get languages
 					
-					$languages = $this->get_languages();
+					$languages = $this->get_language_labels();
 				
 					// get language urls
 					
@@ -1662,7 +1703,7 @@ class Language_Switcher {
 		
 		// get languages
 		
-		$languages = $this->get_languages();
+		$languages = $this->get_language_labels();
 		
 		// get language urls
 		

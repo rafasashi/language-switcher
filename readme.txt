@@ -4,7 +4,7 @@ Tags: language, languages, switcher, internationalization, internationalisation,
 Donate link: https://code.recuweb.com/get/language-switcher-everywhere/
 Requires at least: 4.6
 Tested up to: 5.5
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
@@ -83,6 +83,10 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 6. Add the language switcher with the widget
 
 == Changelog ==
+
+= 3.2.2 - 14/10/2020 =
+
+* Locales implemented
 
 = 3.0.9 - 9/12/2018 =
 
