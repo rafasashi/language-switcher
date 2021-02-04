@@ -33,7 +33,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					$instance['display'] = 'button';
 				}
 				
-				$this->parent->get_language_switcher($instance['display']);
+				echo $this->parent->get_language_switcher($instance['display']);
 				
 			echo $args['after_widget'];
 		}

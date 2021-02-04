@@ -3,11 +3,12 @@
  * Plugin Name: Language Switcher
  * Plugin URI: https://code.recuweb.com/download/language-switcher/
  * Description: Add a Language Switcher to Post Types and Taxonomies
- * Version: 3.2.2
+ * Version: 3.2.4
  * Author: Rafasashi
  * Author URI: https://code.recuweb.com/about-us/
  * Requires at least: 4.6
- * Tested up to: 5.5
+ * Tested up to: 5.6
+ * Tags: language switcher, languages, internationalisation, internationalization, language, switcher, multilingual
  *
  * Text Domain: language-switcher
  * Domain Path: /lang/

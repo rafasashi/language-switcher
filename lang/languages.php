@@ -94,12 +94,18 @@
 			'code' => 'bs',
 			'locale' => 'bs_BA'
 		) ,
+		'bg' => array(
+			'name' => 'Bulgarian',
+			'native' => 'Български',
+			'code' => 'bg',
+			'locale' => 'bg_BG'
+		),
 		'bg_BG' => array(
 			'name' => 'Bulgarian',
 			'native' => 'Български',
 			'code' => 'bg',
 			'locale' => 'bg_BG'
-		) ,
+		),
 		'ca' => array(
 			'name' => 'Catalan',
 			'native' => 'Català',
@@ -111,13 +117,19 @@
 			'native' => 'Català (Balear)	',
 			'code' => 'bal',
 			'locale' => 'bal'
-		) ,
+		),
+		'zh' => array(
+			'name' => 'Chinese (China)',
+			'native' => '简体中文',
+			'code' => 'zh-cn',
+			'locale' => 'zh_CN'
+		),
 		'zh_CN' => array(
 			'name' => 'Chinese (China)',
 			'native' => '简体中文',
 			'code' => 'zh-cn',
 			'locale' => 'zh_CN'
-		) ,
+		),
 		'zh_HK' => array(
 			'name' => 'Chinese (Hong Kong)',
 			'native' => '香港中文版',
@@ -153,31 +165,49 @@
 			'native' => 'Dansk',
 			'code' => 'da',
 			'locale' => 'da_DK'
-		) ,
+		),
 		'dv' => array(
 			'name' => 'Dhivehi',
 			'native' => 'ދިވެހި',
 			'code' => 'dv',
 			'locale' => 'dv'
-		) ,
+		),
+		'nl' => array(
+			'name' => 'Dutch',
+			'native' => 'Nederlands',
+			'code' => 'nl',
+			'locale' => 'nl_NL'
+		),
 		'nl_NL' => array(
 			'name' => 'Dutch',
 			'native' => 'Nederlands',
 			'code' => 'nl',
 			'locale' => 'nl_NL'
-		) ,
+		),
 		'nl_BE' => array(
 			'name' => 'Dutch (Belgium)',
 			'native' => 'Nederlands (België)',
 			'code' => 'nl-be',
 			'locale' => 'nl_BE'
-		) ,
+		),
+		'en' => array(
+			'name' => 'English',
+			'native' => 'English',
+			'code' => 'en',
+			'locale' => 'en_US'
+		),
+		'en_EN' => array(
+			'name' => 'English',
+			'native' => 'English',
+			'code' => 'en',
+			'locale' => 'en_US'
+		),
 		'en_US' => array(
 			'name' => 'English',
 			'native' => 'English',
 			'code' => 'en',
 			'locale' => 'en_US'
-		) ,
+		),
 		'en_AU' => array(
 			'name' => 'English (Australia)',
 			'native' => 'English (Australia)',
@@ -644,6 +674,12 @@
 			'native' => 'گؤنئی آذربایجان',
 			'code' => 'azb',
 			'locale' => 'azb'
+		) ,
+		'es' => array(
+			'name' => 'Spanish',
+			'native' => 'Español',
+			'code' => 'es',
+			'locale' => 'es_ES'
 		) ,
 		'es_AR' => array(
 			'name' => 'Spanish (Argentina)',

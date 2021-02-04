@@ -280,7 +280,7 @@ class Language_Switcher_Admin_API {
 			case 'language_checkbox_multi':
 				
 				$default = $this->parent->get_code_by_locale( get_site_option('WPLANG') );
-
+				
 				foreach ( $field['options'] as $k => $v ) {
 
 					$checked = false;
