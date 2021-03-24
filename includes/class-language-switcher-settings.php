@@ -76,11 +76,9 @@ class Language_Switcher_Settings {
 
 		// language panel
 		
-		$logo = $this->parent->assets_url . 'images/language-icon.png';
-		
 		$position = apply_filters( 'lsw_plugins_menu_item_position', '30' );
 		
-		add_menu_page( 'lsw_plugin_panel', 'Languages', 'nosuchcapability', 'lsw_plugin_panel', NULL, $logo, $position );	
+		add_menu_page( 'lsw_plugin_panel', 'Languages', 'nosuchcapability', 'lsw_plugin_panel', NULL, 'dashicons-translation', $position );	
 		
 		remove_submenu_page( 'lsw_plugin_panel', 'lsw_plugin_panel' );
 		

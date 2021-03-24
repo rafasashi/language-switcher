@@ -245,7 +245,7 @@ class Language_Switcher {
 	public function __session_start() {
 		
 		if( $this->is_disabled('session') ) return false;
-			
+		
 		if (!$this->is_session_started() && !@session_start()) return false;
 
 		if (!isset($_SESSION['__validated'])) {
