@@ -381,6 +381,10 @@ class Language_Switcher {
 			
 				$parent_language = get_post_meta( $parent_id, $this->_base . 'language_switcher' ,true );
 				
+				if( !is_array($parent_language) )
+					
+					$parent_language = array();
+				
 				if( !isset($parent_language['main']) ){
 					
 					$parent_language['main'] = get_post_meta( $parent_id, $this->_base . 'main_language' ,true );
