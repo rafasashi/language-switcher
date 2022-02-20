@@ -19,13 +19,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			
 			// Widget output
 
-			echo $args['before_widget'];
+			$html = $args['before_widget'];
 			
 				if( !empty($instance['title']) ){
 					
 					$title = apply_filters( 'widget_title', $instance['title'] );
 
-					echo $args['before_title'] . $title . $args['after_title'];				
+					$html .= $args['before_title'] . $title . $args['after_title'];				
 				}
 
 				if( empty($instance['display']) ){
@@ -33,9 +33,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					$instance['display'] = 'button';
 				}
 				
-				echo $this->parent->get_language_switcher($instance['display']);
+				$html .= $this->parent->get_language_switcher($instance['display']);
 				
-			echo $args['after_widget'];
+			$html .= $args['after_widget'];
+			
+			echo esc_html($html);
 		}
 
 		public function update( $new_instance, $old_instance ) {

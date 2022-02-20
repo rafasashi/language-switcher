@@ -341,17 +341,16 @@ class Language_Switcher_Settings {
 		if ( is_array( $this->settings ) ) {
 
 			// Check posted/selected tab
+			
 			$current_section = '';
-			if ( isset( $_POST['tab'] ) && $_POST['tab'] ) {
+			
+			if( isset( $_POST['tab'] ) ) {
 				
-				$current_section = $_POST['tab'];
+				$current_section = sanitize_text_field($_POST['tab']);
 			} 
-			else {
-				
-				if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
+			elseif( isset( $_GET['tab'] ) ) {
 					
-					$current_section = $_GET['tab'];
-				}
+				$current_section = sanitize_text_field($_GET['tab']);
 			}
 
 			foreach ( $this->settings as $section => $data ) {
@@ -417,7 +416,8 @@ class Language_Switcher_Settings {
 	public function settings_section ( $section ) {
 		
 		$html = '<p> ' . $this->settings[ $section['id'] ]['description'] . '</p>' . "\n";
-		echo $html;
+		
+		echo esc_html($html);
 	}
 
 	/**
@@ -434,8 +434,10 @@ class Language_Switcher_Settings {
 			$html .= '<h1>' . __( $plugin_data['Name'] , 'language-switcher' ) . '</h1>' . "\n";
 
 			$tab = '';
+			
 			if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
-				$tab .= $_GET['tab'];
+				
+				$tab .= sanitize_text_field($_GET['tab']);
 			}
 
 			// Show page tabs
@@ -444,18 +446,23 @@ class Language_Switcher_Settings {
 				$html .= '<h2 class="nav-tab-wrapper">' . "\n";
 
 				$c = 0;
-				foreach ( $this->settings as $section => $data ) {
+				
+				foreach($this->settings as $section => $data ) {
 
 					// Set tab class
+					
 					$class = 'nav-tab';
-					if ( ! isset( $_GET['tab'] ) ) {
+					
+					if ( !isset( $_GET['tab'] ) ) {
+						
 						if ( 0 == $c ) {
+							
 							$class .= ' nav-tab-active';
 						}
-					} else {
-						if ( isset( $_GET['tab'] ) && $section == $_GET['tab'] ) {
-							$class .= ' nav-tab-active';
-						}
+					}
+					elseif ( isset( $_GET['tab'] ) && $section == $_GET['tab'] ) {
+							
+						$class .= ' nav-tab-active';
 					}
 
 					// Set tab link
@@ -499,8 +506,11 @@ class Language_Switcher_Settings {
 				elseif( count($this->settings) > 1 ){
 
 					$html .= '<p class="submit">' . "\n";
+						
 						$html .= '<input type="hidden" name="tab" value="' . esc_attr( $tab ) . '" />' . "\n";
+						
 						$html .= '<input name="Submit" type="submit" class="button-primary" value="' . esc_attr( __( 'Save Settings' , 'user-session-synchronizer' ) ) . '" />' . "\n";
+					
 					$html .= '</p>' . "\n";
 				}
 				
@@ -508,7 +518,7 @@ class Language_Switcher_Settings {
 		
 		$html .= '</div>';
 
-		echo $html;
+		echo esc_html($html);
 	}
 
 	public function do_settings_sections($page) {
@@ -520,7 +530,7 @@ class Language_Switcher_Settings {
 
 		foreach( (array) $wp_settings_sections[$page] as $section ) {
 			
-			echo '<h3 style="margin-bottom:25px;">' . $section['title'] . '</h3>'.PHP_EOL;
+			echo esc_html('<h3 style="margin-bottom:25px;">' . $section['title'] . '</h3>') . PHP_EOL;
 			
 			call_user_func($section['callback'], $section);
 			
@@ -556,11 +566,11 @@ class Language_Switcher_Settings {
 					
 						if ( !empty($field['args']['label_for']) ){
 							
-							echo '<label class="lsw-active" for="' . $field['args']['label_for'] . '">' . $field['title'] . '</label>';
+							echo esc_html('<label class="lsw-active" for="' . esc_attr($field['args']['label_for']) . '">' . $field['title'] . '</label>');
 						}
 						else{
 							
-							echo '<b>' . $field['title'] . '</b>';		
+							echo esc_html('<b>' . $field['title'] . '</b>');		
 						}
 					
 					echo '</div>';

@@ -366,7 +366,7 @@ class Language_Switcher {
 			
 			// polylang compatibility
 			
-			$language['main'] = $_COOKIE['pll_language'];
+			$language['main'] = sanitize_text_field($_COOKIE['pll_language']);
 		}
 		elseif( !isset($language['main']) ){
 			
@@ -1405,8 +1405,7 @@ class Language_Switcher {
 				array('name'=> "language_switcher"),
 				'type'				=> 'language_switcher_with_url',
 				'id'				=> 'language_switcher',
-				//'default'			=> get_permalink($_REQUEST['post']),
-				'data'				=> isset($_REQUEST['post']) ? $this->get_post_language( $_REQUEST['post'] ) : '',
+				'data'				=> isset($_REQUEST['post']) ? $this->get_post_language( sanitize_text_field($_REQUEST['post']) ) : '',
 				'description'		=> '',
 		);
 		
@@ -1421,8 +1420,7 @@ class Language_Switcher {
 				array('name'=> "language_switcher"),
 				'type'				=> 'language_switcher_without_url',
 				'id'				=> 'language_switcher',
-				//'default'			=> get_permalink($_REQUEST['post']),
-				'data'				=> $this->get_post_language( $_REQUEST['post'] ),
+				'data'				=> $this->get_post_language( sanitize_text_field($_REQUEST['post']) ),
 				'description'		=> '',
 		);
 		
@@ -1432,13 +1430,13 @@ class Language_Switcher {
 	public function save_language_taxonomy($term_id){
 		
 		if( isset($_REQUEST['language_switcher']) ){
-		
-			update_term_meta($term_id,'language_switcher',$_REQUEST['language_switcher']);
+			
+			update_term_meta($term_id,'language_switcher',sanitize_text_field($_REQUEST['language_switcher']));
 		}
 
 		if( isset($_REQUEST['language_switcher']['main']) ){
 		
-			update_term_meta($term_id,$this->_base . 'main_language',$_REQUEST['language_switcher']['main']);
+			update_term_meta($term_id,$this->_base . 'main_language',sanitize_text_field($_REQUEST['language_switcher']['main']));
 		}
 		
 		do_action('lsw_taxonomy_edited',$term_id);
@@ -1448,12 +1446,12 @@ class Language_Switcher {
 		
 		if( isset($_REQUEST['language_switcher']) ){
 
-			update_post_meta($post_id,$this->_base . 'language_switcher',$_REQUEST['language_switcher']);
+			update_post_meta($post_id,$this->_base . 'language_switcher',sanitize_text_field($_REQUEST['language_switcher']));
 		}
 		
 		if( isset($_REQUEST['language_switcher']['main']) ){
 
-			update_post_meta($post_id,$this->_base . 'main_language',$_REQUEST['language_switcher']['main']);
+			update_post_meta($post_id,$this->_base . 'main_language',sanitize_text_field($_REQUEST['language_switcher']['main']));
 		}
 		
 		do_action('lsw_post_type_edited',$post_id);
