@@ -1549,7 +1549,7 @@ class Language_Switcher {
 				}
 			}
 			
-			$title = wp_kses_normalize_entities($title);
+			$title = $title;
 		}
 		
 		$switcher = '';
@@ -1608,10 +1608,10 @@ class Language_Switcher {
 			
 			$html .= '</div>';
 
-			$this->switchers[$id] = wp_kses_normalize_entities($html);
+			$this->switchers[$id] = $html;
 		}
 		
-		return wp_kses_normalize_entities($switcher);
+		return $switcher;
 	}
 	
 	public function get_language_switcher_menu( $items, $args ) {
@@ -1718,7 +1718,7 @@ class Language_Switcher {
 			
 			foreach( $this->switchers as $id => $switcher ){
 				
-				echo $switcher;
+				echo wp_kses_normalize_entities($switcher);
 			}
 		}
 	}

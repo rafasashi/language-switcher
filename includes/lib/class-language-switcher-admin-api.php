@@ -165,7 +165,7 @@ class Language_Switcher_Admin_API {
 												$html .= '<img class="plugin-icon" src="'.$addon['logo_url'].'" />';
 											}
 											
-											$html .= wp_kses_normalize_entities($addon['title']);	
+											$html .= $addon['title'];	
 											
 										$html .= '</a>';
 										
@@ -197,7 +197,7 @@ class Language_Switcher_Admin_API {
 										$url = $addon['addon_link'];
 									}
 									
-									$html .= '<a href="' . $url . '" class="button install-now" aria-label="Install">Install Now</a>';
+									$html .= '<a href="' . esc_url($url) . '" class="button install-now" aria-label="Install">Install Now</a>';
 								}
 								else{
 									
