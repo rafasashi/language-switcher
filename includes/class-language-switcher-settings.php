@@ -417,7 +417,7 @@ class Language_Switcher_Settings {
 		
 		$html = '<p> ' . $this->settings[ $section['id'] ]['description'] . '</p>' . "\n";
 		
-		echo esc_html($html);
+		echo wp_kses_normalize_entities($html);
 	}
 
 	/**
@@ -429,6 +429,7 @@ class Language_Switcher_Settings {
 		$plugin_data = get_plugin_data( $this->parent->file );
 		
 		// Build page HTML
+		
 		$html = '<div class="wrap" id="' . $this->parent->_token . '_settings">' . "\n";
 			
 			$html .= '<h1>' . __( $plugin_data['Name'] , 'language-switcher' ) . '</h1>' . "\n";
@@ -472,7 +473,7 @@ class Language_Switcher_Settings {
 					}
 
 					// Output tab
-					$html .= '<a href="' . $tab_link . '" class="' . esc_attr( $class ) . '">' . ( !empty($data['logo']) ? '<img src="'.$data['logo'].'" alt="" style="margin-top: 4px;margin-right: 7px;float: left;">' : '' ) . esc_html( $data['title'] ) . '</a>' . "\n";
+					$html .= '<a href="' . $tab_link . '" class="' . esc_attr( $class ) . '">' . ( !empty($data['logo']) ? '<img src="'.$data['logo'].'" alt="" style="margin-top: 4px;margin-right: 7px;float: left;">' : '' ) . wp_kses_normalize_entities($data['title']) . '</a>' . "\n";
 
 					++$c;
 				}
@@ -518,7 +519,7 @@ class Language_Switcher_Settings {
 		
 		$html .= '</div>';
 
-		echo esc_html($html);
+		echo wp_kses_normalize_entities($html);
 	}
 
 	public function do_settings_sections($page) {
@@ -530,7 +531,7 @@ class Language_Switcher_Settings {
 
 		foreach( (array) $wp_settings_sections[$page] as $section ) {
 			
-			echo esc_html('<h3 style="margin-bottom:25px;">' . $section['title'] . '</h3>') . PHP_EOL;
+			echo '<h3 style="margin-bottom:25px;">' . wp_kses_normalize_entities($section['title']) . '</h3>' . PHP_EOL;
 			
 			call_user_func($section['callback'], $section);
 			
@@ -566,11 +567,11 @@ class Language_Switcher_Settings {
 					
 						if ( !empty($field['args']['label_for']) ){
 							
-							echo esc_html('<label class="lsw-active" for="' . esc_attr($field['args']['label_for']) . '">' . $field['title'] . '</label>');
+							echo '<label class="lsw-active" for="' . esc_attr($field['args']['label_for']) . '">' . wp_kses_normalize_entities($field['title']) . '</label>';
 						}
 						else{
 							
-							echo esc_html('<b>' . $field['title'] . '</b>');		
+							echo '<b>' . wp_kses_normalize_entities($field['title']) . '</b>';		
 						}
 					
 					echo '</div>';

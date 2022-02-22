@@ -161,7 +161,7 @@ class Language_Switcher {
 			
 			if( !is_admin() && !$this->is_disabled('switch_to_locale') && !empty($_COOKIE[$this->_prefix . 'm']) ){
 			
-				$locale = $this->get_locale_by_code($_COOKIE[$this->_prefix . 'm']);
+				$locale = $this->get_locale_by_code(sanitize_text_field($_COOKIE[$this->_prefix . 'm']));
 			
 				if(!defined('WPLANG')){
 					
@@ -488,7 +488,7 @@ class Language_Switcher {
 		
 		if( !empty($_COOKIE[$this->_prefix . 'd']) ){
 			
-			$default_lang = $_COOKIE[$this->_prefix . 'd'];
+			$default_lang = sanitize_text_field($_COOKIE[$this->_prefix . 'd']);
 		}
 		else{
 			
@@ -738,8 +738,8 @@ class Language_Switcher {
 				
 				if( !isset($query->query['post_type']) || $query->query['post_type'] != 'nav_menu_item' ){
 				
-					$language['main'] 		= $_COOKIE[$this->_prefix . 'm'];
-					$language['default'] 	= ( !empty($_COOKIE[$this->_prefix . 'd']) ? $_COOKIE[$this->_prefix . 'd'] : $default_lang );
+					$language['main'] 		= sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
+					$language['default'] 	= ( !empty($_COOKIE[$this->_prefix . 'd']) ? sanitize_text_field($_COOKIE[$this->_prefix . 'd']) : $default_lang );
 				}
 			}
 			
@@ -808,7 +808,7 @@ class Language_Switcher {
 				if( $_COOKIE[$this->_prefix . 'm'] != $default_lang ){
 					
 					$args['meta_key'] 	= $this->_base . 'main_language';
-					$args['meta_value'] = $_COOKIE[$this->_prefix . 'm'];					
+					$args['meta_value'] = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);					
 				}
 				else{
 
@@ -820,7 +820,7 @@ class Language_Switcher {
 						),
 						array(
 						 'key' 		=> $this->_base . 'main_language',
-						 'value' 	=> $_COOKIE[$this->_prefix . 'm']
+						 'value' 	=> sanitize_text_field($_COOKIE[$this->_prefix . 'm'])
 						)
 					);
 				}
@@ -842,8 +842,8 @@ class Language_Switcher {
 		
 		if( !empty($_COOKIE[$this->_prefix . 'm']) ){
 			
-			$language['main'] = $_COOKIE[$this->_prefix . 'm'];
-			$language['default'] = ( !empty($_COOKIE[$this->_prefix . 'd']) ? $_COOKIE[$this->_prefix . 'd'] : $default_lang );
+			$language['main'] = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
+			$language['default'] = ( !empty($_COOKIE[$this->_prefix . 'd']) ? sanitize_text_field($_COOKIE[$this->_prefix . 'd']) : $default_lang );
 		}	
 		
 		if( $language['main'] == $language['default'] ){
@@ -1043,11 +1043,13 @@ class Language_Switcher {
 								
 					$url = add_query_arg( 'lang', $this->items[$post_id][ $this->_base . 'main_language'], $this->get_current_url() );
 					
-					echo '<a href="' . $url .'">';
+					$html = '<a href="' . esc_url($url) .'">';
 					
-						echo strtoupper($this->items[$post_id][ $this->_base . 'main_language']);
+						$html .= strtoupper($this->items[$post_id][ $this->_base . 'main_language']);
 				
-					echo '</a>';
+					$html .= '</a>';
+					
+					echo wp_kses_normalize_entities($html);
 				}
 				
 			break;
@@ -1546,6 +1548,8 @@ class Language_Switcher {
 					}
 				}
 			}
+			
+			$title = wp_kses_normalize_entities($title);
 		}
 		
 		$switcher = '';
@@ -1554,13 +1558,13 @@ class Language_Switcher {
 		
 		if( $display == 'list' ){
 			
-			$switcher .= '<div id="jq-list-'.$id.'" class="jq-list">';
+			$switcher .= '<div id="' . esc_attr('jq-list-'.$id) . '" class="jq-list">';
 				
 				$switcher .= '<ul class="jq-list-menu">';
 				
 					foreach( $urls as $iso => $data ){
 
-						$switcher .= '<li'.( $this->language['main'] == $iso ? ' class="lsw-active"' : '' ).'><a href="'.$data['url'].'">'.$data['language'].'</a></li>';
+						$switcher .= '<li'.( $this->language['main'] == $iso ? ' class="lsw-active"' : '' ).'><a href="'.esc_url($data['url']).'">'.$data['language'].'</a></li>';
 					}
 					
 				$switcher .= '</ul>';
@@ -1573,41 +1577,41 @@ class Language_Switcher {
 				
 				if( !empty($icon) ){
 					
-					$switcher .='<a class="language-switcher-icon" href="#" data-jq-dropdown="#jq-dropdown-'.$id.'"><img src="'.$icon.'" />'.$title.'</a>';
+					$switcher .='<a class="language-switcher-icon" href="#" data-jq-dropdown="#' . esc_attr('jq-dropdown-'.$id) . '"><img src="'.esc_url($icon).'" />'.$title.'</a>';
 				}
 				else{
 					
-					$switcher .='<a class="language-switcher-btn" href="#" data-jq-dropdown="#jq-dropdown-'.$id.'">'.$title.'</a>';
+					$switcher .='<a class="language-switcher-btn" href="#" data-jq-dropdown="#' . esc_attr('jq-dropdown-'.$id) . '">'.$title.'</a>';
 				}
 			}
 			elseif( !empty($icon) ){
 			
-				$switcher .='<a class="language-switcher-icon" href="#" data-jq-dropdown="#jq-dropdown-'.$id.'"><img src="'.$icon.'" /></a>';
+				$switcher .='<a class="language-switcher-icon" href="#" data-jq-dropdown="#' . esc_attr('jq-dropdown-'.$id) . '"><img src="'.esc_url($icon).'" /></a>';
 			}
 			else{
 				
-				$switcher .='<a class="language-switcher-btn" href="#" data-jq-dropdown="#jq-dropdown-'.$id.'">'.$title.'</a>';
+				$switcher .='<a class="language-switcher-btn" href="#" data-jq-dropdown="#' . esc_attr('jq-dropdown-'.$id) . '">'.$title.'</a>';
 			}
 			
 			// add switcher for inclusion in footer
 			
-			$this->switchers[$id] = '<div id="jq-dropdown-'.$id.'" class="jq-dropdown jq-dropdown-tip">';
+			$html = '<div id="' . esc_attr('jq-dropdown-'.$id) . '" class="jq-dropdown jq-dropdown-tip">';
 				
-				$this->switchers[$id] .= '<ul class="jq-dropdown-menu">';
+				$html .= '<ul class="jq-dropdown-menu">';
 				
 					foreach( $urls as $iso => $data ){
 
-						$this->switchers[$id] .= '<li'.( $this->language['main'] == $iso ? ' class="lsw-active"' : '' ).'><a href="'.$data['url'].'">'.$data['language'].'</a></li>';
-						
-						//echo'<li class="jq-dropdown-divider"></li>';
+						$html .= '<li'.( $this->language['main'] == $iso ? ' class="lsw-active"' : '' ).'><a href="' . esc_url($data['url']) . '">' . $data['language'] . '</a></li>';
 					}
 					
-				$this->switchers[$id] .= '</ul>';
+				$html .= '</ul>';
 			
-			$this->switchers[$id] .= '</div>';			
+			$html .= '</div>';
+
+			$this->switchers[$id] = wp_kses_normalize_entities($html);
 		}
 		
-		return $switcher;
+		return wp_kses_normalize_entities($switcher);
 	}
 	
 	public function get_language_switcher_menu( $items, $args ) {
@@ -1733,7 +1737,7 @@ class Language_Switcher {
 			
 			foreach( $urls as $iso => $data ){
 				
-				echo '<link rel="alternate" href="' . $data['url'] . '" hreflang="' . $iso . '" />' . PHP_EOL;
+				echo '<link rel="alternate" href="' . esc_url($data['url']) . '" hreflang="' . esc_attr($iso) . '" />' . PHP_EOL;
 			}
 		}
 	}

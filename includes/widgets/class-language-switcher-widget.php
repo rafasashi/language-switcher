@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				
 			$html .= $args['after_widget'];
 			
-			echo esc_html($html);
+			echo wp_kses_normalize_entities($html);
 		}
 
 		public function update( $new_instance, $old_instance ) {

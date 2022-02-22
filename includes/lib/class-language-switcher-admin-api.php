@@ -165,7 +165,7 @@ class Language_Switcher_Admin_API {
 												$html .= '<img class="plugin-icon" src="'.$addon['logo_url'].'" />';
 											}
 											
-											$html .= $addon['title'];	
+											$html .= wp_kses_normalize_entities($addon['title']);	
 											
 										$html .= '</a>';
 										
@@ -513,17 +513,19 @@ class Language_Switcher_Admin_API {
 				$html .= '<span class="description">' . $field['description'] . '</span>' . "\n";
 
 				if ( ! $post ) {
+					
 					$html .= '</label>' . "\n";
 				}
+				
 			break;
 		}
 
 		if ( !$echo ) {
 			
-			return esc_html($html);
+			return wp_kses_normalize_entities($html);
 		}
 
-		echo esc_html($html);
+		echo wp_kses_normalize_entities($html);
 	}
 
 	/**
@@ -623,9 +625,9 @@ class Language_Switcher_Admin_API {
 
 		if ( ! is_array( $field ) || 0 == count( $field ) ) return;
 
-		$field = '<div class="form-field">' . ( !empty($field['label']) ? '<label for="' . $field['id'] . '">' . $field['label'] . '</label>' : '' ) . $this->display_field( $field, $post, false ) . '</div>' . "\n";
+		$field = '<div class="form-field">' . ( !empty($field['label']) ? '<label for="' . esc_attr($field['id']) . '">' . $field['label'] . '</label>' : '' ) . $this->display_field( $field, $post, false ) . '</div>' . "\n";
 
-		echo esc_html($field);
+		echo wp_kses_normalize_entities($field);
 	}
 
 	/**
@@ -647,7 +649,7 @@ class Language_Switcher_Admin_API {
 			
 			if ( isset( $_REQUEST[ $field['id'] ] ) ) {
 				
-				update_post_meta( $post_id, $field['id'], $this->validate_input( $_REQUEST[ $field['id'] ], $field['type'] ) );
+				update_post_meta( $post_id, $field['id'], $this->validate_input( sanitize_text_field($_REQUEST[$field['id']]), $field['type'] ) );
 			} 
 			else {
 				
