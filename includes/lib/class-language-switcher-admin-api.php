@@ -579,7 +579,17 @@ class Language_Switcher_Admin_API {
 
 		// Generate each metabox
 		foreach ( $post_types as $post_type ) {
-			add_meta_box( $id, $title, array( $this, 'meta_box_content' ), $post_type, $context, $priority, $callback_args );
+			
+			add_meta_box( 
+			
+				$id, 
+				$title, 
+				array( $this, 'meta_box_content' ), 
+				$post_type, 
+				$context, 
+				$priority, 
+				$callback_args 
+			);
 		}
 	}
 
@@ -644,7 +654,7 @@ class Language_Switcher_Admin_API {
 		$fields = apply_filters( $post_type . '_custom_fields', array(), $post_type );
 		
 		if ( ! is_array( $fields ) || 0 == count( $fields ) ) return;
-
+		
 		foreach ( $fields as $field ) {
 			
 			if ( isset( $_REQUEST[ $field['id'] ] ) ) {
