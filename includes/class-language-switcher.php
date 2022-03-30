@@ -303,7 +303,7 @@ class Language_Switcher {
 		
 		if( !$this->is_disabled('menus_query_filter') ){
 		
-			add_filter('wp_get_nav_menu_items', array( $this, 'filter_language_menus'), 10, 2 );
+			add_filter('wp_get_nav_menu_items', array( $this, 'filter_language_menus'), 10, 9999999 );
 		}
 		
 		//add switchers
@@ -897,23 +897,23 @@ class Language_Switcher {
 			
 			if( $item->type == 'post_type' || $item->type == 'taxonomy' ){
 			
-				$language = array();
+				$menu_language = array();
 				
 				if( $item->type == 'post_type' ){
 					
-					$language = (array) $this->get_post_language($item->object_id);
+					$menu_language = (array) $this->get_post_language($item->object_id);
 				}
 				elseif( $item->type == 'taxonomy' ){
 					
-					$language = (array) get_term_meta( $item->object_id, 'language_switcher' ,true );
+					$menu_language = (array) get_term_meta( $item->object_id, 'language_switcher' ,true );
 				}
 				
-				if( empty($language['main']) ){
+				if( empty($menu_language['main']) ){
 					
-					$language['main'] = $language['default'];
+					$menu_language['main'] = $language['default'];
 				}
 				
-				if( $language['main'] != $language['main'] ){
+				if( $menu_language['main'] != $language['main'] ){
 					
 					unset($menu[$i]);
 				}
