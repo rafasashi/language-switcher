@@ -876,7 +876,7 @@ class Language_Switcher {
 	
 	public function get_month_link($monthlink, $year, $month){
 		
-		$language = get_current_language();
+		$language = $this->get_current_language();
 		
 		if( !empty($language['main']) ){
 			
@@ -891,7 +891,7 @@ class Language_Switcher {
 	
 	public function filter_language_menus( $menu, $args ){
 		
-		$language = get_current_language();
+		$language = $this->get_current_language();
 		
 		foreach( $menu as $i => $item ){
 			
