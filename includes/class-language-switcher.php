@@ -275,36 +275,39 @@ class Language_Switcher {
 		//get current language
 		
 		add_filter('wp', array($this, 'get_current_language'));
-
-		//filter languages
 		
-		if( !$this->is_disabled('posts_query_filter') ){
+		if( !is_admin() ){
 		
-			add_filter('pre_get_posts', array( $this, 'query_language_posts') );
+			//filter languages
+			
+			if( !$this->is_disabled('posts_query_filter') ){
+			
+				add_filter('pre_get_posts', array( $this, 'query_language_posts') );
+			}
+			
+			if( !$this->is_disabled('terms_query_filter') ){
+			
+				add_filter('get_terms_args', array( $this, 'query_language_taxonomies'), 10, 2 );
+			}
+			
+			//filter menus
+			
+			if( !$this->is_disabled('menus_query_filter') ){
+			
+				add_filter('wp_get_nav_menu_items', array( $this, 'filter_language_menus'), 10, 9999999 );
+			}
+			
+			/*
+			if( !$this->is_disabled('comments_query_filter') ){
+			
+				add_filter('pre_get_comments', array( $this, 'query_language_comments') );
+			}
+			*/			
 		}
-		
-		if( !$this->is_disabled('terms_query_filter') ){
-		
-			add_filter('get_terms_args', array( $this, 'query_language_taxonomies'), 10, 2 );
-		}
-		
-		/*
-		if( !$this->is_disabled('comments_query_filter') ){
-		
-			add_filter('pre_get_comments', array( $this, 'query_language_comments') );
-		}
-		*/
 		
 		//append urls
 		
 		add_filter('month_link', array( $this, 'get_month_link'), 10, 3 );
-		
-		//filter menus
-		
-		if( !$this->is_disabled('menus_query_filter') ){
-		
-			add_filter('wp_get_nav_menu_items', array( $this, 'filter_language_menus'), 10, 9999999 );
-		}
 		
 		//add switchers
 
@@ -974,13 +977,7 @@ class Language_Switcher {
 								__( 'Languages', 'language-switcher' ), 
 								array($post_type),
 								'side',
-								'default',
-								/*
-								array(
-									//'__block_editor_compatible_meta_box' => true,
-									'__back_compat_meta_box'             => true,
-								)
-								*/
+								'default'
 							);
 						}
 					});
