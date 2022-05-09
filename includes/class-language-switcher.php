@@ -1124,15 +1124,14 @@ class Language_Switcher {
 			</th>  
 			<td>  
 				<?php 
-
+				
 				echo $this->admin->display_field( array(
 				
 					'type'				=> get_taxonomy( $term->taxonomy )->public ? 'language_switcher_with_url' : 'language_switcher_without_url',
 					'id'				=> 'language_switcher',
 					'name'				=> 'language_switcher',
 					'placeholder'		=> 'add new languages',
-					'data'				=> get_term_meta($term->term_id,$this->_base . 'main_language', true),
-					//'default'			=> get_term_link($term,$term->taxonomy),
+					'data'				=> get_term_meta($term->term_id,'language_switcher', true),
 					'description'		=> '',
 					
 				), false );				 
@@ -1435,14 +1434,16 @@ class Language_Switcher {
 	
 	public function save_language_taxonomy($term_id){
 		
-		if( isset($_REQUEST['language_switcher']) ){
+		if( isset($_REQUEST['language_switcher']) && is_array($_REQUEST['language_switcher']) ){
 			
-			update_term_meta($term_id,'language_switcher',sanitize_text_field($_REQUEST['language_switcher']));
-		}
+			$language_switcher = $this->sanitize_language_switcher($_REQUEST['language_switcher']);
+			
+			update_term_meta($term_id,'language_switcher',$language_switcher);
 
-		if( isset($_REQUEST['language_switcher']['main']) ){
-		
-			update_term_meta($term_id,$this->_base . 'main_language',sanitize_text_field($_REQUEST['language_switcher']['main']));
+			if( !empty($language_switcher['main']) ){
+			
+				update_term_meta($term_id,$this->_base . 'main_language',$language_switcher['main']);
+			}
 		}
 		
 		do_action('lsw_taxonomy_edited',$term_id);
