@@ -532,18 +532,20 @@ class Language_Switcher {
 			}
 			elseif( is_category() || is_tag() || is_tax() ){
 				
-				$queried = get_queried_object();
-				$term_id = $queried->term_id;
+				if( $queried = get_queried_object() ){
 				
-				if( !$language = get_term_meta( $term_id, 'language_switcher' ,true )){
-				
-					$language = array();
+					$term_id = $queried->term_id;
+					
+					if( !$language = get_term_meta( $term_id, 'language_switcher' ,true )){
+					
+						$language = array();
+					}
 				}
-			
+				
 				if( empty($language['main']) ){
 					
 					$language['main'] = $default_lang;
-				}
+				}				
 			}
 			elseif( is_archive() ){
 								
@@ -1058,6 +1060,8 @@ class Language_Switcher {
 				
 			break;
 		}
+		
+		return $column;
 	}
 	
 	public function set_language_taxonomy_columns($columns) {
