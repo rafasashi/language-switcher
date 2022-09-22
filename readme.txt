@@ -4,7 +4,7 @@ Tags: language switcher, languages, internationalisation, internationalization, 
 Donate link: https://code.recuweb.com/get/language-switcher-everywhere/
 Requires at least: 4.6
 Tested up to: 6.0
-Stable tag: 3.5.4
+Stable tag: 3.6.0
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 

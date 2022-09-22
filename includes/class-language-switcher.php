@@ -692,7 +692,16 @@ class Language_Switcher {
 		
 		$has_language = true;
 		
-		if( empty($_REQUEST['lang']) && !is_archive() && !is_home() && ( !is_object($query) || empty($query->query) || !isset($query->query['post_type']) || !is_array($query->query['post_type']) || !in_array($query->query['post_type'],$this->get_active_post_types() ) ) ){
+		if( empty($_REQUEST['lang']) 
+			&& 	 !is_archive() 
+			&& 	 !is_home() 
+			&& ( !is_object($query) 
+				|| 	empty($query->query) 
+				|| 	!isset($query->query['post_type']) 
+				|| 	!is_array($this->get_active_post_types()) 
+				|| 	!in_array($query->query['post_type'],$this->get_active_post_types() )
+			)
+		){
 			
 			$has_language = false;
 		}
@@ -1315,9 +1324,9 @@ class Language_Switcher {
 
 			$valid = get_option( $this->_base . 'language_post_types');
 			
-			if( !empty($valid) ){
+			if( !empty($valid) && is_array($valid) ){
 				
-				foreach( $valid as  $e => $post_type ){
+				foreach( $valid as $e => $post_type ){
 					
 					if( !$this->is_valid_post_type($post_type) ){
 						
