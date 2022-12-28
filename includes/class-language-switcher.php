@@ -196,6 +196,15 @@ class Language_Switcher {
 		
 		add_action('wp_head', array($this,'add_hreflang_in_head'));
 		
+		// multisite sync hooks
+		
+		add_action('msc_before_export_post_meta', array($this,'filter_export_post_meta'),0,3);
+
+		add_action('msc_before_import_post_meta', array($this,'filter_import_post_meta'),0,5);
+				
+		add_action('msc_before_export_term_meta', array($this,'filter_export_term_meta'),0,3);
+
+		add_action('msc_before_import_term_meta', array($this,'filter_import_term_meta'),0,5);
 		
 	} // End __construct ()
 	
@@ -348,6 +357,8 @@ class Language_Switcher {
 	
 	public function get_post_language($post_id){
 		
+		$default_lang = $this->get_default_language(true);
+		
 		$language = get_post_meta( $post_id, $this->_base . 'language_switcher' ,true );
 		
 		if( empty($language) || !is_array($language) ){
@@ -360,13 +371,9 @@ class Language_Switcher {
 			$language['urls'] = array();
 		}
 		
-		if( !empty($_COOKIE['pll_language']) ){
-			
-			// polylang compatibility
-			
-			$language['main'] = sanitize_text_field($_COOKIE['pll_language']);
-		}
-		elseif( !isset($language['main']) ){
+		$language['urls'][$default_lang] = apply_filters('lsw_sanitize_link',get_permalink($post_id));
+		
+		if( !isset($language['main']) ){
 			
 			$language['main'] = get_post_meta( $post_id, $this->_base . 'main_language' ,true );
 		}
@@ -410,7 +417,7 @@ class Language_Switcher {
 			}
 			else{
 			
-				$language['main'] = get_option( $this->_base . 'default_language' );
+				$language['main'] = $default_lang;
 			}			
 		}
 		
@@ -419,16 +426,28 @@ class Language_Switcher {
 	
 	public function get_term_language($term_id){
 		
+		$default_lang = $this->get_default_language(true);
+		
 		$language = get_term_meta( $term_id, 'language_switcher' ,true );
-	
+		
+		if( !is_array($language) ){
+			
+			$language = array();
+		}
+		
 		if( !isset($language['urls']) ){
 			
 			$language['urls'] = array();
 		}
 	
+		if( empty($language['urls'][$default_lang]) ){
+			
+			$language['urls'][$default_lang] = apply_filters('lsw_sanitize_link',get_term_link($term_id));
+		}
+		
 		if( empty($language['main']) ){
 			
-			$language['main'] = get_option( $this->_base . 'default_language' );
+			$language['main'] = $default_lang;
 		}
 		
 		return $language;
@@ -482,9 +501,9 @@ class Language_Switcher {
 		return $language;
 	}
 	
-	public function get_default_language(){
+	public function get_default_language($skip_cookie=false){
 		
-		if( !empty($_COOKIE[$this->_prefix . 'd']) ){
+		if( !$skip_cookie && !empty($_COOKIE[$this->_prefix . 'd']) ){
 			
 			$default_lang = sanitize_text_field($_COOKIE[$this->_prefix . 'd']);
 		}
@@ -1788,6 +1807,98 @@ class Language_Switcher {
 				echo '<link rel="alternate" href="' . esc_url($data['url']) . '" hreflang="' . esc_attr($iso) . '" />' . PHP_EOL;
 			}
 		}
+	}
+	
+	public function filter_export_term_meta($meta,$term,$site){
+		
+		if( $active_taxonomies = $this->get_active_taxonomies() ){
+			
+			if( in_array($term->taxonomy,$active_taxonomies) ){
+				
+				$default_lang = $this->get_default_language(true);
+				
+				if( empty($meta['language_switcher']['urls'][$default_lang]) ){
+					
+					$meta['language_switcher'] = $this->get_term_language($term);
+				}
+			}
+		}
+		
+		return $meta;
+	}
+
+	public function filter_export_post_meta($meta,$post,$site){
+		
+		if( $post_types = $this->get_active_post_types() ){
+			
+			if( in_array($post->post_type,$post_types) ){
+				
+				$default_lang = $this->get_default_language(true);
+				
+				if( empty($meta['lsw_language_switcher']['urls'][$default_lang]) ){
+					
+					$meta['lsw_language_switcher'] = $this->get_post_language($post->ID);
+				}
+			}
+		}
+		
+		return $meta;
+	}
+	
+	public function filter_import_post_meta($meta,$data,$post_id,$post_type,$site){
+		
+		if( $post_types = $this->get_active_post_types() ){
+			
+			if( in_array($post_type,$post_types) && !empty($data['lsw_language_switcher']['urls'])) {
+
+				$default_lang = $this->get_default_language(true);
+				
+				if( $language = $this->get_post_language($post_id) ){
+					
+					foreach( $data['lsw_language_switcher']['urls'] as $lang => $url ){
+						
+						if( !empty($url) && $lang != $default_lang ){
+							
+							$language['urls'][$lang] = $url;
+						}
+					}
+					
+					$meta['lsw_main_language'] = $default_lang;
+					
+					$meta['lsw_language_switcher'] = $language;
+				}
+			}
+		}
+		
+		return $meta;
+	}
+	
+	public function filter_import_term_meta($meta,$data,$term_id,$taxonomy,$site){
+		
+		if( $active_taxonomies = $this->get_active_taxonomies() ){
+			
+			if( in_array($taxonomy,$active_taxonomies) && !empty($data['language_switcher']['urls'])) {
+				
+				$default_lang = $this->get_default_language(true);
+				
+				if( $language = $this->get_term_language($term_id) ){
+					
+					foreach( $data['language_switcher']['urls'] as $lang => $url ){
+						
+						if( !empty($url) && $lang != $default_lang ){
+							
+							$language['urls'][$lang] = $url;
+						}
+					}
+					
+					$meta['lsw_main_language'] = $default_lang;
+					
+					$meta['language_switcher'] = $language;
+				}
+			}
+		}
+		
+		return $meta;
 	}
 	
 	/**
