@@ -256,6 +256,7 @@ class Language_Switcher_Settings {
 					'default'		=> '',
 				),
 				*/
+				/*
 				array(
 					'id' 			=> 'disable_session',
 					'label'			=> __( 'Disable Session' , 'language-switcher' ),
@@ -263,6 +264,7 @@ class Language_Switcher_Settings {
 					'type'			=> 'checkbox',
 					'default'		=> '',
 				),
+				*/
 				/*
 				array(
 					'id' 			=> 'disable_cookies',

@@ -246,39 +246,6 @@ class Language_Switcher {
 		return FALSE;
 	}
 	
-	public function __session_start() {
-		
-		if( $this->is_disabled('session') ) return false;
-		
-		if (!$this->is_session_started() && !@session_start()) return false;
-
-		if (!isset($_SESSION['__validated'])) {
-			
-			$_SESSION['__validated'] = 1;
-
-			@session_write_close();
-
-			unset($_SESSION['__validated']);
-
-			@session_start(['read_and_close' => true]);
-
-			if (!isset($_SESSION['__validated'])) {
-	
-				return false;
-			} 
-		}
-		
-		add_filter('shutdown',function(){
-			
-			if (isset($_SESSION['__validated'])) {
-				
-				@session_write_close();
-			}
-		});
-
-		return true;
-	}
-   	
 	public function init_language(){
 		
 		//get current language
@@ -440,10 +407,7 @@ class Language_Switcher {
 			$language['urls'] = array();
 		}
 	
-		if( empty($language['urls'][$default_lang]) ){
-			
-			$language['urls'][$default_lang] = apply_filters('lsw_sanitize_link',get_term_link($term_id));
-		}
+		$language['urls'][$default_lang] = apply_filters('lsw_sanitize_link',get_term_link($term_id));
 		
 		if( empty($language['main']) ){
 			
@@ -635,10 +599,6 @@ class Language_Switcher {
 				
 				if( !is_admin() ){
 					
-					// start session
-					
-					$this->__session_start();
-			
 					// set cookies & switch language
 					
 					if( !isset($_COOKIE[$this->_prefix . 'm']) || $_COOKIE[$this->_prefix . 'm'] != $language['main'] || !isset($_COOKIE[$this->_prefix . 'd']) || $_COOKIE[$this->_prefix . 'd'] != $language['default'] ) {
@@ -648,38 +608,7 @@ class Language_Switcher {
 						setcookie($this->_prefix . 'm', $language['main'], 0, '/');
 						
 						setcookie($this->_prefix . 'd', $language['default'], 0, '/');
-						
-						//prevent redirecting search engine and crawlers
-						
-						if( !empty($_SESSION['__validated']) && empty($_SESSION[$this->_base . 'redirect']) ){
-
-							// redirect language url
-							
-							if( !is_admin() && !empty($language['urls'][$main_lang]) && $current_url != $language['urls'][$main_lang] ){
-								
-								$_SESSION[$this->_base . 'redirect'] = $language['urls'][$main_lang];
-								
-								wp_redirect( $language['urls'][$main_lang] );
-								exit;						
-							}
-							elseif( !is_admin() && $this->locale != $locale ){
-								
-								$_SESSION[$this->_base . 'redirect'] = $current_url;
-
-								//var_dump($_SESSION);exit;
-								
-								wp_redirect( $current_url );
-								exit;
-							}
-						}
-					}
-					elseif( !is_admin() && $default_lang != $main_lang && !empty($language['urls'][$main_lang]) && $current_url != $language['urls'][$main_lang] ){
-							
-						// redirect language url
-							
-						wp_redirect( $language['urls'][$main_lang] );
-						exit;						
-					}			
+					}	
 					elseif( !empty( $language['main'] ) && !$this->is_disabled('switch_to_locale') ){
 						
 						// switch locale
@@ -687,13 +616,6 @@ class Language_Switcher {
 						$locale = $this->get_locale_by_code($language['main']);
 
 						switch_to_locale( $locale );
-					}
-
-					if( !empty($_SESSION[$this->_base . 'redirect']) ){
-						
-						// flush redirect session
-						
-						$_SESSION[$this->_base . 'redirect'] = '';
 					}
 				}
 			}
@@ -1509,11 +1431,11 @@ class Language_Switcher {
 			}
 			elseif( $key == 'main' ){
 				
-				$value = sanitize_text_field( $value );
+				$value = sanitize_text_field($value);
 			}
 			else{
 				
-				$value = sanitize_url( $value );
+				$value = sanitize_url($value,['http','https']);
 			}
 		}
 
