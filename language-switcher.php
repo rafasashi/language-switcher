@@ -7,7 +7,7 @@
  * Author: Rafasashi
  * Author URI: https://code.recuweb.com/about-us/
  * Requires at least: 4.6
- * Tested up to: 6.0
+ * Tested up to: 6.2
  * Tags: language switcher, languages, internationalisation, internationalization, language, switcher, multilingual
  *
  * Text Domain: language-switcher
