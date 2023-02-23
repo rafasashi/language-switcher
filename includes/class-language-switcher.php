@@ -327,7 +327,7 @@ class Language_Switcher {
 		$default_lang = $this->get_default_language(true);
 		
 		$language = get_post_meta( $post_id, $this->_base . 'language_switcher' ,true );
-		
+		dump($language);
 		if( empty($language) || !is_array($language) ){
 			
 			$language = array();
@@ -338,13 +338,11 @@ class Language_Switcher {
 			$language['urls'] = array();
 		}
 		
-		$language['urls'][$default_lang] = apply_filters('lsw_sanitize_link',get_permalink($post_id));
-		
 		if( !isset($language['main']) ){
 			
 			$language['main'] = get_post_meta( $post_id, $this->_base . 'main_language' ,true );
 		}
-
+		
 		if( empty($language['main']) ){
 			
 			$parent_id  = wp_get_post_parent_id( $post_id );
@@ -386,6 +384,11 @@ class Language_Switcher {
 			
 				$language['main'] = $default_lang;
 			}			
+		}
+		
+		if( empty($language['urls'][$language['main']]) ){
+		
+			$language['urls'][$language['main']] = apply_filters('lsw_sanitize_link',get_permalink($post_id));
 		}
 		
 		return $language;
@@ -687,9 +690,15 @@ class Language_Switcher {
 			}
 			elseif( !empty($_COOKIE[$this->_prefix . 'm']) ){
 				
+				$lang_loc = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
+				
+				$lang_loc = explode('-',$lang_loc);
+				
+				$lang = $lang_loc[0];
+				
 				if( !isset($query->query['post_type']) || $query->query['post_type'] != 'nav_menu_item' ){
 				
-					$language['main'] 		= sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
+					$language['main'] 		= $lang;
 					$language['default'] 	= ( !empty($_COOKIE[$this->_prefix . 'd']) ? sanitize_text_field($_COOKIE[$this->_prefix . 'd']) : $default_lang );
 				}
 			}
@@ -753,13 +762,19 @@ class Language_Switcher {
 			$language = '';
 			
 			$default_lang = $this->get_default_language();
-		
+			
 			if( !empty($_COOKIE[$this->_prefix . 'm']) ){
+				
+				$lang_loc = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
+				
+				$lang_loc = explode('-',$lang_loc);
+				
+				$lang = $lang_loc[0];
 				
 				if( $_COOKIE[$this->_prefix . 'm'] != $default_lang ){
 					
 					$args['meta_key'] 	= $this->_base . 'main_language';
-					$args['meta_value'] = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);					
+					$args['meta_value'] = $lang;					
 				}
 				else{
 
@@ -771,7 +786,7 @@ class Language_Switcher {
 						),
 						array(
 						 'key' 		=> $this->_base . 'main_language',
-						 'value' 	=> sanitize_text_field($_COOKIE[$this->_prefix . 'm'])
+						 'value' 	=> $lang,
 						)
 					);
 				}
@@ -792,8 +807,14 @@ class Language_Switcher {
 		);
 		
 		if( !empty($_COOKIE[$this->_prefix . 'm']) ){
+				
+			$lang_loc = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
 			
-			$language['main'] = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
+			$lang_loc = explode('-',$lang_loc);
+			
+			$lang = $lang_loc[0];
+			
+			$language['main'] = $lang;
 			$language['default'] = ( !empty($_COOKIE[$this->_prefix . 'd']) ? sanitize_text_field($_COOKIE[$this->_prefix . 'd']) : $default_lang );
 		}	
 		
@@ -1552,8 +1573,12 @@ class Language_Switcher {
 				$switcher .= '<ul class="jq-list-menu">';
 				
 					foreach( $urls as $iso => $data ){
-
-						$switcher .= '<li'.( $language['main'] == $iso ? ' class="lsw-active"' : '' ).'><a href="'.esc_url($data['url']).'">'.$data['language'].'</a></li>';
+						
+						$switcher .= '<li'.( $language['main'] == $iso ? ' class="lsw-active"' : '' ).'>';
+							
+							$switcher .= '<a onclick="setLang(\''.$iso.'\');" href="'.esc_url($data['url']).'">'.$data['language'].'</a>';
+							
+						$switcher .= '</li>';
 					}
 					
 				$switcher .= '</ul>';
@@ -1590,7 +1615,11 @@ class Language_Switcher {
 				
 					foreach( $urls as $iso => $data ){
 
-						$html .= '<li'.( $language['main'] == $iso ? ' class="lsw-active"' : '' ).'><a href="' . esc_url($data['url']) . '">' . $data['language'] . '</a></li>';
+						$html .= '<li'.( $language['main'] == $iso ? ' class="lsw-active"' : '' ).'>';
+							
+							$html .= '<a onclick="setLang(\''.$iso.'\');" href="' . esc_url($data['url']) . '">' . $data['language'] . '</a>';
+						
+						$html .= '</li>';
 					}
 					
 				$html .= '</ul>';
@@ -1881,13 +1910,50 @@ class Language_Switcher {
 	 */
 	public function enqueue_scripts () {
 		
-		//wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend.js', array( 'jquery' ), $this->_version );
-		//wp_enqueue_script( $this->_token . '-frontend' );	
+		//wp_register_script($this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend.js', array(), $this->_version );
+		//wp_enqueue_script($this->_token . '-frontend' );
+
+		wp_register_script($this->_token . '-switcher', '', array() );
+		wp_enqueue_script($this->_token . '-switcher' );
+		wp_add_inline_script($this->_token . '-switcher', $this->get_switcher_script() );
 		
-		wp_register_script( $this->_token . '-dropdown', esc_url( $this->assets_url ) . 'js/jquery.dropdown.min.js', array( 'jquery' ), $this->_version );
-		wp_enqueue_script( $this->_token . '-dropdown' );	
+		wp_register_script($this->_token . '-dropdown', esc_url( $this->assets_url ) . 'js/jquery.dropdown.min.js', array( 'jquery' ), $this->_version );
+		wp_enqueue_script($this->_token . '-dropdown' );	
 		
 	} // End enqueue_scripts ()
+	
+	public function get_switcher_script(){
+		
+		$script = '';
+		
+		$script .= 'function setLang(lang){';
+
+			$script .= 'document.cookie = "' . $this->_prefix . 'm=" + lang + ";path=/;SameSite=Strict";';
+			
+		$script .= '}';
+		
+		$script .= 'var links = document.querySelectorAll("link[hreflang]");';
+
+		$script .= 'for (var i = 0; i < links.length; i++) {';
+				
+			$script .= 'var lang = links[i].hreflang;';
+			
+			$script .= 'var menus = document.querySelectorAll("a.menu-item-lang-" + lang);';
+			  
+			$script .= 'for (var j = 0; j < menus.length; j++) {';
+				
+				$script .= 'menus[j].addEventListener("click", function(event) {';
+
+					$script .= 'setLang(lang);';
+				
+				$script .= '});';
+			
+			$script .= '}';
+		
+		$script .= '}';
+		
+		return $script;
+	}
 
 	/**
 	 * Load admin CSS.

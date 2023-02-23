@@ -256,24 +256,6 @@ class Language_Switcher_Settings {
 					'default'		=> '',
 				),
 				*/
-				/*
-				array(
-					'id' 			=> 'disable_session',
-					'label'			=> __( 'Disable Session' , 'language-switcher' ),
-					'description'	=> 'To detect and set the language during the first request the switcher uses session_start() but it can be disabled if the server is not compatible.',
-					'type'			=> 'checkbox',
-					'default'		=> '',
-				),
-				*/
-				/*
-				array(
-					'id' 			=> 'disable_cookies',
-					'label'			=> __( 'Disable Cookies' , 'language-switcher' ),
-					'description'	=> 'For single site implementation the switched language is stored in cookies to set WPLANG but it can be disabled in multi-site implementation.',
-					'type'			=> 'checkbox',
-					'default'		=> '',
-				),
-				*/
 				array(
 					'id' 			=> 'disable_switch_to_locale',
 					'label'			=> __( 'Disable Locale Switcher' , 'language-switcher' ),
