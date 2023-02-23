@@ -327,7 +327,7 @@ class Language_Switcher {
 		$default_lang = $this->get_default_language(true);
 		
 		$language = get_post_meta( $post_id, $this->_base . 'language_switcher' ,true );
-		dump($language);
+		
 		if( empty($language) || !is_array($language) ){
 			
 			$language = array();
