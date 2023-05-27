@@ -534,7 +534,7 @@ class Language_Switcher_Admin_API {
 	 * @param  string $type Type of field to validate
 	 * @return string       Validated value
 	 */
-
+	
 	public function validate_output ( $data = '', $type = 'text' ) {
 
 		switch( $type ) {
