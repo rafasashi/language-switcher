@@ -149,8 +149,8 @@
 			'locale' => 'co'
 		),
 		'hr' => array(
-			'name' => 'Croatian'
-			,'native' => 'Hrvatski',
+			'name' => 'Croatian',
+			'native' => 'Hrvatski',
 			'code' => 'hr',
 			'locale' => 'hr'
 		),
