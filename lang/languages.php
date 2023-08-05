@@ -256,6 +256,12 @@
 			'code' => 'fr-be',
 			'locale' => 'fr_BE'
 		),
+		'fr_CA' => array(
+			'name' => 'French (Canada)',
+			'native' => 'Français du Canada',
+			'code' => 'fr-ca',
+			'locale' => 'fr_CA'
+		),
 		'fr_FR' => array(
 			'name' => 'French',
 			'native' => 'Français',
