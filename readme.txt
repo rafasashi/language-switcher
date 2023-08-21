@@ -4,7 +4,7 @@ Tags: language switcher, languages, internationalisation, internationalization, 
 Donate link: https://code.recuweb.com/get/language-switcher-everywhere/
 Requires at least: 4.6
 Tested up to: 6.3
-Stable tag: 3.7.4
+Stable tag: 3.7.5
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
@@ -21,9 +21,9 @@ For quicker support on this plugin go to: [https://code.recuweb.com/support/foru
 = Free Features =
 
 * STANDALONE – No Wordpress Multisite required
-* MIXED SOURCES – map internal or external urls
+* MIXED SOURCES – map internal or external urls
 * POST TYPE LANGUAGE – Add a main language selector to post types and map urls of alternative languages
-* TAXONOMY LANGUAGE  – Add a main language selector to terms and map urls of alternative languages
+* TAXONOMY LANGUAGE – Add a main language selector to terms and map urls of alternative languages
 * HREFLANG LINKS – Add hreflang links into the head of each page and improve the SEO
 * MENU LANGUAGE – Add a main language selector to the menu settings and switch the menu accordingly
 * LANGUAGE FILTERS – Filter items by language in the main WP_Query of archive pages

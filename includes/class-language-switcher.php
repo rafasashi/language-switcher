@@ -130,7 +130,7 @@ class Language_Switcher {
 		$this->views   		= trailingslashit( $this->dir ) . 'views';
 		$this->lang   		= trailingslashit( $this->dir ) . 'lang';
 		$this->assets_dir 	= trailingslashit( $this->dir ) . 'assets';
-		$this->assets_url 	= home_url( trailingslashit( str_replace( ABSPATH, '', $this->dir ))  . 'assets/' );
+		$this->assets_url 	= esc_url( trailingslashit( plugins_url( '/assets/', $this->file ) ) );
 
 		$this->script_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
