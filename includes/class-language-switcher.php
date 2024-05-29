@@ -556,6 +556,18 @@ class Language_Switcher {
 					}
 				}
 			}
+			elseif( $post_id = apply_filters('lsw_get_current_post_id',0) ){
+				
+				if( !$language = $this->get_post_language($post_id)){
+					
+					$language = array();
+				}
+
+				if( empty($language['main']) ){
+					
+					$language['main'] = $default_lang;
+				}	
+			}			
 			elseif( !empty($_REQUEST['lang']) ){
 			
 				$language = array(
