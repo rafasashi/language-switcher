@@ -1201,7 +1201,7 @@ class Language_Switcher {
 		
 			require_once( $this->lang . '/languages.php' );
 		
-			$this->locales = $locales;
+			$this->locales = apply_filters('lsw_locales',$locales);
 		}
 		
 		return $this->locales;
@@ -1763,7 +1763,12 @@ class Language_Switcher {
 		
 		if( $urls = $this->get_language_urls($languages) ){
 			
-			echo PHP_EOL;
+			$default_lang = $this->get_default_language(true);
+			
+			if( !empty($urls[$default_lang]['url']) ){
+				
+				echo '<link rel="alternate" href="' . esc_url($urls[$default_lang]['url']) . '" hreflang="x-default" />' . PHP_EOL;
+			}
 			
 			foreach( $urls as $iso => $data ){
 				
