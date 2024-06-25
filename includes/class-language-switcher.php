@@ -1763,7 +1763,7 @@ class Language_Switcher {
 		
 		if( $urls = $this->get_language_urls($languages) ){
 			
-			$default_lang = $this->get_default_language(true);
+			$default_lang = apply_filters('lsw_hreflang_x_default',$this->get_default_language(true));
 			
 			if( !empty($urls[$default_lang]['url']) ){
 				
