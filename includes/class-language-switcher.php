@@ -1955,6 +1955,8 @@ class Language_Switcher {
 				
 			$script .= 'var lang = links[i].hreflang;';
 			
+			$script .= 'if (lang === "x-default") continue;';
+			
 			$script .= 'var menus = document.querySelectorAll("a.menu-item-lang-" + lang);';
 			  
 			$script .= 'for (var j = 0; j < menus.length; j++) {';

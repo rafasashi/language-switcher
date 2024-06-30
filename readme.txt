@@ -1,6 +1,6 @@
 === Language Switcher ===
 Contributors: rafasashi
-Tags: language switcher, languages, internationalisation, internationalization, language, switcher, multilingual
+Tags: language switcher, languages, internationalisation, internationalization, language
 Donate link: https://code.recuweb.com/get/language-switcher-everywhere/
 Requires at least: 4.6
 Tested up to: 6.5
