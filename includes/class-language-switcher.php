@@ -1780,22 +1780,23 @@ class Language_Switcher {
 
 	public function add_visibility_css_classes(){
 
-		$languages = $this->get_language_labels();
+		if( $languages = $this->get_active_languages() ){
 
-		$default_lang = $this->get_current_language()['main'];
+			$curr_lang = $this->get_current_language()['main'];
 
-		echo "<style>" . PHP_EOL;
+			echo "<style>" . PHP_EOL;
+			
+			foreach( $languages as $lang ) {
 
-		foreach ($languages as $code => $lang) {
+				if( $lang != $curr_lang ) {
 
-			if ($code != $default_lang) {
+					echo " .lsw-if-{$lang} { display: none; }" . PHP_EOL;
+				}
 
-				echo " .lsw-if-{$code} { display: none; }" . PHP_EOL;
 			}
 
+			echo "</style>" . PHP_EOL;
 		}
-
-		echo "</style>" . PHP_EOL;
 	}
 	
 	public function filter_export_term_meta($meta,$term,$site){
