@@ -195,6 +195,7 @@ class Language_Switcher {
 		add_filter('wp_nav_menu_objects', array($this,'get_language_switcher_menu'), 9999, 2 );
 		
 		add_action('wp_head', array($this,'add_hreflang_in_head'));
+		add_action('wp_head', array($this,'add_visibility_css_classes'));
 		
 		// multisite sync hooks
 		
@@ -1775,6 +1776,26 @@ class Language_Switcher {
 				echo '<link rel="alternate" href="' . esc_url($data['url']) . '" hreflang="' . esc_attr($iso) . '" />' . PHP_EOL;
 			}
 		}
+	}
+
+	public function add_visibility_css_classes(){
+
+		$languages = $this->get_language_labels();
+
+		$default_lang = $this->get_current_language()['main'];
+
+		echo "<style>" . PHP_EOL;
+
+		foreach ($languages as $code => $lang) {
+
+			if ($code != $default_lang) {
+
+				echo " .lsw-if-{$code} { display: none; }" . PHP_EOL;
+			}
+
+		}
+
+		echo "</style>" . PHP_EOL;
 	}
 	
 	public function filter_export_term_meta($meta,$term,$site){
