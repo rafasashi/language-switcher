@@ -481,7 +481,7 @@ class Language_Switcher_Settings {
 										
 											$html .= '<h3>';
 											
-												$html .= '<a href="'.$addon['addon_link'].'" class="thickbox open-plugin-details-modal" style="text-decoration:none;">';
+												$html .= '<a href="'.$addon['addon_link'].'" target="_blank" style="text-decoration:none;">';
 													
 													if( !empty($addon['logo_url']) ){
 														
