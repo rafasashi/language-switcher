@@ -297,18 +297,11 @@ class Language_Switcher_Settings {
 		);
 		
 		$settings['addons'] = array(
-			'title'					=> __( 'Addons', 'language-switcher' ),
-			'description'			=> '',
-			'class'					=> 'pull-right',
-			'logo'					=> $this->parent->assets_url . '/images/recuweb-icon.png',
-			'fields'				=> array(
-				array(
-					'id' 			=> 'addon_plugins',
-					'label' 		=> '',
-					'type'			=> 'addon_plugins',
-					'description'	=> ''
-				)				
-			),
+			'title'			=> __( 'Addons', 'language-switcher' ),
+			'description'	=> '',
+			'class'			=> 'pull-right',
+			'logo'			=> $this->parent->assets_url . '/images/addons-icon.png',
+			'fields'		=> array(),
 		);
 
 		$settings = apply_filters( $this->parent->_token . '_settings_fields', $settings );
@@ -365,35 +358,44 @@ class Language_Switcher_Settings {
 			}
 		}
 		
-		
 		//get addons
-	
+		
+		$domain = parse_url(home_url(),PHP_URL_HOST);
+		
+		$campaign = basename(dirname(__FILE__,2));
+		
 		$this->addons = array(
 			
 			'language-switcher-everywhere' 	=> array(
 			
 				'title' 		=> 'Languages Everywhere',
-				'addon_link' 	=> 'https://code.recuweb.com/get/language-switcher-everywhere/',
+				'addon_link' 	=> 'https://code.recuweb.com/get/language-switcher-everywhere/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
 				'addon_name' 	=> 'language-switcher-everywhere',
-				'source_url' 	=> '',
 				'logo_url' 		=> 'https://code.recuweb.com/c/u/3a09f4cf991c32bd735fa06db67889e5/2018/07/language-switcher-everywhere-squared-300x300.png',
 				'description'	=> 'Extends Language Switcher to add languages to custom post types and taxonomies like WooCommerce products or tags',
 				'author' 		=> 'Code Market',
-				'author_link' 	=> 'https://code.recuweb.com/about-us/',
+				'author_link' 	=> 'https://code.recuweb.com/about-us/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
 			),
-			/*
-			'language-switcher-synchronizer' 	=> array(
+			'rew-bulk-editor' 	=> array(
 			
-				'title' 		=> 'Languages Synchronizer',
-				'addon_link' 	=> 'https://code.recuweb.com/get/language-switcher-synchronizer/',
-				'addon_name' 	=> 'language-switcher-synchronizer',
-				'source_url' 	=> '',
-				'logo_url' 		=> 'https://code.recuweb.com/c/u/3a09f4cf991c32bd735fa06db67889e5/2018/07/language-switcher-synchronizer-squared-300x300.png',
-				'description'	=> 'Extends Language Switcher to automatically synchronize language urls from one page to another',
+				'title' 		=> 'Bulk Task Editor',
+				'addon_link' 	=> 'https://code.recuweb.com/get/bulk-task-editor/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
+				'addon_name' 	=> 'rew-bulk-editor',
+				'logo_url' 		=> 'https://d3ddkiw8cptmcg.cloudfront.net/c/u/3a09f4cf991c32bd735fa06db67889e5/2024/07/21103352/content-bulk-editor-2-300x300.png',
+				'description'	=> 'Accelerate your content management workflow for post types, taxonomies, users, and imported data, all without overloading your server.',
 				'author' 		=> 'Code Market',
-				'author_link' 	=> 'https://code.recuweb.com/about-us/',
-			),
-			*/
+				'author_link' 	=> 'https://code.recuweb.com/about-us/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
+			),			
+			'woo-bulk-product-editor' 	=> array(
+			
+				'title' 		=> 'Bulk Product Editor',
+				'addon_link' 	=> 'https://code.recuweb.com/get/bulk-product-editor/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
+				'addon_name' 	=> 'woo-bulk-product-editor',
+				'logo_url' 		=> 'https://d3ddkiw8cptmcg.cloudfront.net/c/u/3a09f4cf991c32bd735fa06db67889e5/2024/08/17074428/bulk-product-editor-1-300x300.png',
+				'description'	=> 'Bulk Product Editor is a WordPress plugin designed to streamline and accelerate your store management workflow all without overloading your server.',
+				'author' 		=> 'Code Market',
+				'author_link' 	=> 'https://code.recuweb.com/about-us/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
+			),			
 		);
 	}
 
@@ -409,6 +411,8 @@ class Language_Switcher_Settings {
 	 * @return void
 	 */
 	public function settings_page () {
+					
+		$tab = !empty($_GET['tab']) ? sanitize_title($_GET['tab']) : key($this->settings);
 		
 		$plugin_data = get_plugin_data( $this->parent->file );
 		
@@ -417,13 +421,6 @@ class Language_Switcher_Settings {
 		$html = '<div class="wrap" id="' . $this->parent->_token . '_settings">' . "\n";
 			
 			$html .= '<h1>' . __( $plugin_data['Name'] , 'language-switcher' ) . '</h1>' . "\n";
-
-			$tab = '';
-			
-			if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
-				
-				$tab .= sanitize_text_field($_GET['tab']);
-			}
 
 			// Show page tabs
 			if ( is_array( $this->settings ) && 1 < count( $this->settings ) ) {
@@ -434,19 +431,12 @@ class Language_Switcher_Settings {
 				
 				foreach($this->settings as $section => $data ) {
 
-					// Set tab class
-					
+					// Set tab class.
+				
 					$class = 'nav-tab';
 					
-					if ( !isset( $_GET['tab'] ) ) {
+					if ( $section == $tab ) {
 						
-						if ( 0 == $c ) {
-							
-							$class .= ' nav-tab-active';
-						}
-					}
-					elseif ( isset( $_GET['tab'] ) && $section == $_GET['tab'] ) {
-							
 						$class .= ' nav-tab-active';
 					}
 
@@ -472,10 +462,79 @@ class Language_Switcher_Settings {
 				ob_start();
 				
 				settings_fields( $this->parent->_token . '_settings' );
-				
-				if( isset($_GET['tab']) && $_GET['tab'] == 'addons' ){
-					
-					$this->do_settings_sections( $this->parent->_token . '_settings' );
+
+				if( $tab == 'addons' ){
+			
+					$html .= '<h3 style="margin-bottom:25px;">' . wp_kses_normalize_entities($this->settings[$tab]['title']) . '</h3>' . PHP_EOL;
+
+					$html .= '<div class="settings-form-wrapper" style="margin-top:25px;">';
+						
+						$html .= '<div id="the-list">';
+						
+							foreach( $this->addons as $addon ){
+						
+								$html .= '<div class="panel panel-default plugin-card plugin-card-akismet">';
+								
+									$html .= '<div class="panel-body plugin-card-top">';
+										
+										$html .= '<div class="name column-name">';
+										
+											$html .= '<h3>';
+											
+												$html .= '<a href="'.$addon['addon_link'].'" class="thickbox open-plugin-details-modal" style="text-decoration:none;">';
+													
+													if( !empty($addon['logo_url']) ){
+														
+														$html .= '<img class="plugin-icon" src="'.$addon['logo_url'].'" />';
+													}
+													
+													$html .= $addon['title'];	
+													
+												$html .= '</a>';
+												
+											$html .= '</h3>';
+											
+										$html .= '</div>';
+										
+										$html .= '<div class="desc column-description">';
+									
+											$html .= '<p>'.$addon['description'].'</p>';
+											$html .= '<p class="authors"> <cite>By <a target="_blank" href="'.$addon['author_link'].'">'.$addon['author'].'</a></cite></p>';
+										
+										$html .= '</div>';
+										
+									$html .= '</div>';
+									
+									$html .= '<div class="panel-footer plugin-card-bottom text-right">';
+										
+										$plugin_file = $addon['addon_name'] . '/' . $addon['addon_name'] . '.php';
+										
+										if( !file_exists( WP_PLUGIN_DIR . '/' . $addon['addon_name'] . '/' . $addon['addon_name'] . '.php' ) ){
+											
+											if( !empty($addon['source_url']) ){
+											
+												$url = $addon['source_url'];
+											}
+											else{
+												
+												$url = $addon['addon_link'];
+											}
+											
+											$html .= '<a href="' . esc_url($url) . '" class="button install-now" aria-label="Install">Install Now</a>';
+										}
+										else{
+											
+											$html .= '<span>Installed</span>';
+										}
+									
+									$html .= '</div>';
+								
+								$html .= '</div>';
+							}
+						
+						$html .= '</div>';
+
+					$html .= '</div>';
 				}
 				else{
 					
@@ -484,11 +543,7 @@ class Language_Switcher_Settings {
 				
 				$html .= ob_get_clean();
 				
-				if( isset($_GET['tab']) && $_GET['tab'] == 'addons' ){
-					
-					//do nothing
-				}
-				elseif( count($this->settings) > 1 ){
+				if( $this->settings[$tab]['fields'] ){
 
 					$html .= '<p class="submit">' . "\n";
 						
@@ -504,32 +559,6 @@ class Language_Switcher_Settings {
 		$html .= '</div>';
 
 		echo wp_kses_normalize_entities($html);
-	}
-
-	public function do_settings_sections($page) {
-		
-		global $wp_settings_sections, $wp_settings_fields;
-
-		if ( !isset($wp_settings_sections) || !isset($wp_settings_sections[$page]) )
-			return;
-
-		foreach( (array) $wp_settings_sections[$page] as $section ) {
-			
-			echo '<h3 style="margin-bottom:25px;">' . wp_kses_normalize_entities($section['title']) . '</h3>' . PHP_EOL;
-			
-			call_user_func($section['callback'], $section);
-			
-			if ( !isset($wp_settings_fields) ||
-				 !isset($wp_settings_fields[$page]) ||
-				 !isset($wp_settings_fields[$page][$section['id']]) )
-					continue;
-					
-			echo '<div class="settings-form-wrapper" style="margin-top:25px;">';
-
-				$this->do_settings_fields($page, $section['id']);
-			
-			echo '</div>';
-		}
 	}
 
 	public function do_settings_fields($page, $section) {
