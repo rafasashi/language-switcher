@@ -135,41 +135,55 @@ class Language_Switcher_Admin_API {
 			break;
 
 			case 'checkbox_multi':
-				foreach ( $field['options'] as $k => $v ) {
-					$checked = false;
-					if ( in_array( $k, (array) $data ) ) {
-						$checked = true;
+				
+				$html .= '<div style="width:fit-content;">';
+					
+					foreach ( $field['options'] as $k => $v ) {
+						
+						$checked = false;
+						
+						if ( in_array( $k, (array) $data ) ) {
+							
+							$checked = true;
+						}
+						
+						$html .= '<label style="display:block;" for="' . esc_attr( $field['id'] . '_' . $k ) . '" class="checkbox_multi"><input type="checkbox" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '[]" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" /> ' . $v . '</label> ';
 					}
-					$html .= '<label style="display:block;" for="' . esc_attr( $field['id'] . '_' . $k ) . '" class="checkbox_multi"><input type="checkbox" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '[]" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" /> ' . $v . '</label> ';
-				}
+					
+				$html .= '</div>';
+				
 			break;
 
 			case 'object_checkbox_multi':
-			
-				$labels = $this->parent->get_labels();
 				
-				foreach ( $field['options'] as $k => $v ) {
-				
-					$disabled = true;
+				$html .= '<div style="width:fit-content;">';
 					
-					if( $this->parent->is_valid_object($field['object'],$v) ){
+					$labels = $this->parent->get_labels();
+					
+					foreach ( $field['options'] as $k => $v ) {
+					
+						$disabled = true;
 						
-						$disabled = false;
+						if( $this->parent->is_valid_object($field['object'],$v) ){
+							
+							$disabled = false;
+						}
+						
+						$checked = false;
+						
+						if ( !$disabled && in_array( $v, (array) $data ) ) {
+							
+							$checked = true;
+						}
+						
+						$html .= '<label style="display:block;" for="' . esc_attr( $field['id'] . '_' . $k ) . '" class="checkbox_multi">';
+							
+							$html .= '<input type="checkbox" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '[]" value="' . esc_attr( $v ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" ' . disabled( $disabled, true, false ) . ' /> ' . $labels[$field['object']][$v] . ' <i style="font-size:10px;">' . $v . '</i>';
+						
+						$html .= '</label> ';
 					}
 					
-					$checked = false;
-					
-					if ( !$disabled && in_array( $v, (array) $data ) ) {
-						
-						$checked = true;
-					}
-					
-					$html .= '<label style="display:block;" for="' . esc_attr( $field['id'] . '_' . $k ) . '" class="checkbox_multi">';
-						
-						$html .= '<input type="checkbox" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '[]" value="' . esc_attr( $v ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" ' . disabled( $disabled, true, false ) . ' /> ' . $labels[$field['object']][$v] . ' <i style="font-size:10px;">' . $v . '</i>';
-					
-					$html .= '</label> ';
-				}
+				$html .= '</div>';
 				
 			break;
 
