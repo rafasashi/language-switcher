@@ -395,6 +395,26 @@ class Language_Switcher_Settings {
 				'description'	=> 'Bulk Product Editor is a WordPress plugin designed to streamline and accelerate your store management workflow all without overloading your server.',
 				'author' 		=> 'Code Market',
 				'author_link' 	=> 'https://code.recuweb.com/about-us/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
+			),
+			'openai-bulk-editor' 	=> array(
+			
+				'title' 		=> 'OpenAI Bulk Editor',
+				'addon_link' 	=> 'https://code.recuweb.com/get/openai-bulk-editor/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
+				'addon_name' 	=> 'openai-bulk-editor',
+				'logo_url' 		=> 'https://d3ddkiw8cptmcg.cloudfront.net/c/u/3a09f4cf991c32bd735fa06db67889e5/2024/09/19122612/openai-bulk-editor-300x300.png',
+				'description'	=> 'Accelerate your content management workflow using OpenAI API to edit post types, taxonomies, users, and imported data, all while keeping your server load minimal.',
+				'author' 		=> 'Code Market',
+				'author_link' 	=> 'https://code.recuweb.com/about-us/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
+			),
+			'openai-text-completion' 	=> array(
+			
+				'title' 		=> 'OpenAI Form Completion',
+				'addon_link' 	=> 'https://code.recuweb.com/get/openai-text-completion/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
+				'addon_name' 	=> 'openai-text-completion',
+				'logo_url' 		=> 'https://d3ddkiw8cptmcg.cloudfront.net/c/u/3a09f4cf991c32bd735fa06db67889e5/2023/07/27100530/openai-text-completion-1-300x300.png',
+				'description'	=> 'Integrate OpenAI Text Completion into your WordPress admin forms and production workflow using shift + select to start a dialog box',
+				'author' 		=> 'Code Market',
+				'author_link' 	=> 'https://code.recuweb.com/about-us/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
 			),			
 		);
 	}
