@@ -196,7 +196,36 @@ class Language_Switcher {
 		
 		add_action('wp_head', array($this,'add_hreflang_in_head'));
 		add_action('wp_head', array($this,'add_visibility_css_classes'));
-
+		
+		// apis
+		
+		add_action('rest_api_init', function(){
+			
+			register_rest_route( 'lsw-languages/v1', '/(?P<type>[\w,]+)/(?P<id>[0-9]+)/', array(
+				
+				'methods' 	=> array('GET'),
+				'callback' 	=> function($rest){
+					
+					if( !empty($rest['type']) && !empty($rest['id']) ){
+						
+						$id = intval($rest['id']);
+						
+						$type = sanitize_title($rest['type']);
+						
+						if( $type == 'post' ){
+							
+							return $this->get_post_language($id);
+						}
+						elseif( $type == 'term' ){
+							
+							return $this->get_term_language($id);
+						}
+					}
+				},
+				'permission_callback' => '__return_true',
+			));		
+		});
+		
 		// bulk task editor hooks
 		
 		add_filter('rewbe_before_duplicate_meta', array($this, 'filter_bulk_duplicate_metadata'),0,2);
@@ -406,7 +435,7 @@ class Language_Switcher {
 			
 			$language['urls'] = array();
 		}
-	
+		
 		$language['urls'][$default_lang] = apply_filters('lsw_sanitize_link',get_term_link($term_id));
 		
 		if( empty($language['main']) ){
@@ -479,21 +508,15 @@ class Language_Switcher {
 			
 			$results = $wpdb->get_results("SELECT option_value as value FROM $options_table WHERE option_name = 'WPLANG'");
 			
-			if( isset($results[0]) && is_object($results[0]) && isset($results[0]->value) ){
+			if( isset($results[0]) && is_object($results[0]) && !empty($results[0]->value) ){
 			
 				$default_locale = $results[0]->value;
 			}
-			
-			if( empty($default_locale) ){
+			else{
 				
-				if( defined('WPLANG') && !empty(WPLANG) ){
-					
-					$default_locale = WPLANG;
-				}
-				else{
-					
-					$default_locale = get_locale();
-				}
+				//$default_locale = get_locale();
+				
+				$default_locale = 'en_US';
 			}
 			
 			$default_lang = $this->get_code_by_locale($default_locale);
@@ -1834,42 +1857,45 @@ class Language_Switcher {
 	
 	public function bulk_duplicate_meta_value($metadata,$name,$object,$args,$origin){
 		
-		global $wpdb;
+		if( $name == 'lsw_language_switcher' ){
+		
+			global $wpdb;
 
-		if( !isset($origin[$wpdb->prefix]) ){
+			if( !isset($origin[$wpdb->prefix]) ){
 			
-			// db prefix switched
-					
-			if( $name == 'lsw_language_switcher' ){
+				// db prefix switched
+
+				$metadata = $this->merge_languages($object,$metadata);
+			}
+		}
+		
+		return $metadata;
+	}
+	
+	public function merge_languages($object,$metadata){
+		
+		if( !empty($object->post_type) ){
+			
+			$languages = $this->get_post_language($object->ID);
+		}
+		elseif( !empty($object->taxonomy) ){
+			
+			$languages = $this->get_term_language($object->term_id);
+		}
+		
+		if( !empty($languages) ){
+		
+			if( !empty($metadata['urls']) ){
 				
-				$default_lang = $this->get_default_language(true);
+				// merge language urls
 				
-				if( !empty($object->post_type) ){
+				foreach( $metadata['urls'] as $lang => $url ){
 					
-					$languages = $this->get_post_language($object->ID);
-				}
-				elseif( !empty($object->taxonomy) ){
-					
-					$languages = $this->get_post_language($object->term_id);
-				}
-				
-				if( !empty($metadata['urls']) ){
-					
-					// merge language urls
-					
-					foreach( $metadata['urls'] as $lang => $url ){
-						
-						if( $metadata['main'] == $lang ){
-							
-							$languages['urls'][$lang] = $url;
-							
-							break;
-						}
-					}
-					
-					$metadata = $languages;
+					$languages['urls'][$lang] = $url;
 				}
 			}
+			
+			$metadata = $languages;
 		}
 		
 		return $metadata;
