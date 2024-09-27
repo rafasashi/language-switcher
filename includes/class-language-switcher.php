@@ -226,12 +226,6 @@ class Language_Switcher {
 			));		
 		});
 		
-		// bulk task editor hooks
-		
-		add_filter('rewbe_before_duplicate_meta', array($this, 'filter_bulk_duplicate_metadata'),0,2);
-		
-		add_filter('rewbe_duplicate_meta_value', array($this, 'bulk_duplicate_meta_value'),0,5);
-		
 	} // End __construct ()
 	
 	public function get_cookie_prefix(){
@@ -1825,80 +1819,6 @@ class Language_Switcher {
 
 			echo "</style>" . PHP_EOL;
 		}
-	}
-	
-	public function filter_bulk_duplicate_metadata($metadata,$object){
-		
-		if( !empty($object->post_type) && in_array($object->post_type,$this->get_active_post_types()) ){
-			
-			$default_lang = $this->get_default_language(true);
-			
-			$languages = !empty($metadata['lsw_language_switcher']) ? maybe_unserialize($metadata['lsw_language_switcher']) : false;
-			
-			if( empty($languages['lsw_language_switcher']['urls'][$default_lang]) ){
-				
-				$metadata['lsw_language_switcher'] = array(serialize($this->get_post_language($object->ID)));
-			}
-		}
-		elseif( !empty($object->taxonomy) && in_array($object->taxonomy,$this->get_active_taxonomies()) ){
-			
-			$default_lang = $this->get_default_language(true);
-			
-			$languages = !empty($metadata['lsw_language_switcher']) ? maybe_unserialize($metadata['lsw_language_switcher']) : false;
-			
-			if( empty($languages['lsw_language_switcher']['urls'][$default_lang]) ){
-				
-				$metadata['lsw_language_switcher'] = array(serialize($this->get_term_language($object->term_id)));
-			}
-		}
-		
-		return $metadata;
-	}
-	
-	public function bulk_duplicate_meta_value($metadata,$name,$object,$args,$origin){
-		
-		if( $name == 'lsw_language_switcher' ){
-		
-			global $wpdb;
-
-			if( !isset($origin[$wpdb->prefix]) ){
-			
-				// db prefix switched
-
-				$metadata = $this->merge_languages($object,$metadata);
-			}
-		}
-		
-		return $metadata;
-	}
-	
-	public function merge_languages($object,$metadata){
-		
-		if( !empty($object->post_type) ){
-			
-			$languages = $this->get_post_language($object->ID);
-		}
-		elseif( !empty($object->taxonomy) ){
-			
-			$languages = $this->get_term_language($object->term_id);
-		}
-		
-		if( !empty($languages) ){
-		
-			if( !empty($metadata['urls']) ){
-				
-				// merge language urls
-				
-				foreach( $metadata['urls'] as $lang => $url ){
-					
-					$languages['urls'][$lang] = $url;
-				}
-			}
-			
-			$metadata = $languages;
-		}
-		
-		return $metadata;
 	}
 	
 	/**
