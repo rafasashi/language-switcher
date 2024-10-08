@@ -1191,8 +1191,13 @@ class Language_Switcher {
 		if( $post_types = get_post_types('','')){
 			
 			foreach( $post_types as $slug => $post_type){
-
-				if( $post_type->show_ui === true ){
+				
+				if( $post_type->show_ui === true && !in_array($post_type->name,array(
+					
+					'wp_block',
+					'wp_navigation',
+					
+				))){
 					
 					$this->post_types[$slug] = $post_type->name;
 				}
@@ -1208,7 +1213,11 @@ class Language_Switcher {
 		
 			foreach( $taxonomies as $slug => $taxonomy){
 				
-				if( $taxonomy->show_ui === true ){
+				if( $taxonomy->show_ui === true && !in_array($taxonomy->name,array(
+					
+					'wp_pattern_category',
+					
+				)) ){
 				
 					$this->taxonomies[$slug] = $taxonomy->name;
 				}
