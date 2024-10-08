@@ -460,14 +460,14 @@ class Language_Switcher_Settings {
 						$class .= ' nav-tab-active';
 					}
 
-					// Set tab link
+					// Set tab link 
+					
 					$tab_link = add_query_arg( array( 'tab' => $section ) );
 					if ( isset( $_GET['settings-updated'] ) ) {
 						$tab_link = remove_query_arg( 'settings-updated', $tab_link );
 					}
-
 					// Output tab
-					$html .= '<a href="' . $tab_link . '" class="' . esc_attr( $class ) . '">' . ( !empty($data['logo']) ? '<img src="'.$data['logo'].'" alt="" style="margin-top: 4px;margin-right: 7px;float: left;">' : '' ) . wp_kses_normalize_entities($data['title']) . '</a>' . "\n";
+					$html .= '<a href="' . esc_url($tab_link) . '" class="' . esc_attr( $class ) . '">' . ( !empty($data['logo']) ? '<img src="'.$data['logo'].'" alt="" style="margin-top: 4px;margin-right: 7px;float: left;">' : '' ) . wp_kses_normalize_entities($data['title']) . '</a>' . "\n";
 
 					++$c;
 				}
