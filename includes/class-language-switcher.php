@@ -526,9 +526,9 @@ class Language_Switcher {
 			$default_lang = $this->get_default_language();
 			
 			$default_urls = get_option( $this->_base . 'default_language_urls' );
-
+            
 			if( is_singular() && !is_front_page() ){
-				
+				 
 				if( !$language = $this->get_post_language( get_queried_object_id() )){
 					
 					$language = array();
@@ -556,8 +556,22 @@ class Language_Switcher {
 					$language['main'] = $default_lang;
 				}				
 			}
+            elseif( $post_id = apply_filters('lsw_get_current_post_id',0) ){
+				
+                // leave this above is_archive
+                
+				if( !$language = $this->get_post_language($post_id)){
+					
+					$language = array();
+				}
+
+				if( empty($language['main']) ){
+					
+					$language['main'] = $default_lang;
+				}	
+			}
 			elseif( is_archive() ){
-								
+				
 				$language = array(
 				
 					'urls' => $default_urls,
@@ -578,19 +592,7 @@ class Language_Switcher {
 						}
 					}
 				}
-			}
-			elseif( $post_id = apply_filters('lsw_get_current_post_id',0) ){
-				
-				if( !$language = $this->get_post_language($post_id)){
-					
-					$language = array();
-				}
-
-				if( empty($language['main']) ){
-					
-					$language['main'] = $default_lang;
-				}	
-			}			
+			}		
 			elseif( !empty($_REQUEST['lang']) ){
 			
 				$language = array(
