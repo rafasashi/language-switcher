@@ -376,11 +376,11 @@ class Language_Switcher_Settings {
 				'author' 		=> 'Code Market',
 				'author_link' 	=> 'https://code.recuweb.com/about-us/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
 			),
-			'rew-bulk-editor' 	=> array(
+			'bulk-task-editor' 	=> array(
 			
 				'title' 		=> 'Bulk Task Editor',
 				'addon_link' 	=> 'https://code.recuweb.com/get/bulk-task-editor/?utm_source='.$domain.'&utm_medium=referral&utm_campaign='.$campaign,
-				'addon_name' 	=> 'rew-bulk-editor',
+				'addon_name' 	=> 'bulk-task-editor',
 				'logo_url' 		=> 'https://d3ddkiw8cptmcg.cloudfront.net/c/u/3a09f4cf991c32bd735fa06db67889e5/2024/07/21103352/content-bulk-editor-2-300x300.png',
 				'description'	=> 'Accelerate your content management workflow for post types, taxonomies, users, and imported data, all without overloading your server.',
 				'author' 		=> 'Code Market',

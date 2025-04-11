@@ -405,9 +405,9 @@ class Language_Switcher {
 				$language['main'] = $default_lang;
 			}			
 		}
-		
-		if( empty($language['urls'][$language['main']]) ){
-		
+
+		if( !empty($language['main']) ){
+            
 			$language['urls'][$language['main']] = apply_filters('lsw_sanitize_link',get_permalink($post_id));
 		}
 		
@@ -528,7 +528,7 @@ class Language_Switcher {
 			$default_urls = get_option( $this->_base . 'default_language_urls' );
             
 			if( is_singular() && !is_front_page() ){
-				 
+				
 				if( !$language = $this->get_post_language( get_queried_object_id() )){
 					
 					$language = array();
@@ -1526,7 +1526,7 @@ class Language_Switcher {
 			
 			$language = $this->get_current_language();
 			
-			foreach($active_languages as $iso){
+			foreach( $active_languages as $iso ){
 				
 				if( !empty($languages[$iso]) ){
 					
