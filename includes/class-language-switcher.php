@@ -490,7 +490,7 @@ class Language_Switcher {
 	
 	public function get_default_language($skip_cookie=false){
 		
-		if( !$skip_cookie && !empty($_COOKIE[$this->_prefix . 'd']) ){
+		if( !is_admin() && !$skip_cookie && !empty($_COOKIE[$this->_prefix . 'd']) ){
 			
 			$default_lang = sanitize_text_field($_COOKIE[$this->_prefix . 'd']);
 		}
