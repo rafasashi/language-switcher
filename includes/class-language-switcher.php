@@ -179,7 +179,7 @@ class Language_Switcher {
 		load_plugin_textdomain('language-switcher', false, Language_Switcher::$plugin_path . 'lang/');
 		
 		add_action('admin_init', array($this, 'init_backend'));
-			
+            
 		add_action('init', array($this, 'init_language'));
 		
 		// shorcodes
@@ -972,37 +972,37 @@ class Language_Switcher {
 		if( in_array( basename($_SERVER['SCRIPT_FILENAME']), array('post.php','post-new.php','edit.php') ) ){
 
 			//add language in post types
-			
+
+            add_action( 'add_meta_boxes', function(){
+                
+                foreach( $this->get_active_post_types() as $post_type ){
+                    
+                    $this->admin->add_meta_box (
+                    
+                        'language_switcher',
+                        __( 'Languages', 'language-switcher' ), 
+                        array($post_type),
+                        'side',
+                        'default'
+                    );
+                }
+            });
+            
 			if( $post_types = $this->get_active_post_types() ){
 				
 				foreach( $post_types as $post_type ){
 					
-					add_action( 'add_meta_boxes', function(){
-						
-						foreach( $this->get_active_post_types() as $post_type ){
-							
-							$this->admin->add_meta_box (
-							
-								'language_switcher',
-								__( 'Languages', 'language-switcher' ), 
-								array($post_type),
-								'side',
-								'default'
-							);
-						}
-					});
-					
-					add_filter( $post_type . '_custom_fields', array( $this, get_post_type_object( $post_type )->public ? 'add_post_type_language_switcher_with_url' : 'add_post_type_language_switcher_without_url' ));
+					add_filter($post_type . '_custom_fields', array( $this, get_post_type_object( $post_type )->public ? 'add_post_type_language_switcher_with_url' : 'add_post_type_language_switcher_without_url' ));
 				
-					add_action( 'save_post_' . $post_type, array( $this, 'save_language_post_type' ), 10, 3 );
+					add_filter('manage_'.$post_type.'_posts_columns', array( $this, 'set_language_post_type_columns' ) );
 				
-					add_filter( 'manage_'.$post_type.'_posts_columns', array( $this, 'set_language_post_type_columns' ) );
-				
-					add_action( 'manage_'.$post_type.'_posts_custom_column' , array( $this, 'get_language_post_type_column' ), 10, 2 );
+					add_action('manage_'.$post_type.'_posts_custom_column' , array( $this, 'get_language_post_type_column' ), 10, 2 );
 				}
-			
-				add_filter( 'pre_get_posts', array( $this, 'query_admin_language_post_type') );
 			}
+
+            add_action('save_post', array( $this, 'save_language_post_type' ), 10, 3 );
+				
+            add_filter('pre_get_posts', array( $this, 'query_admin_language_post_type') );
 		}		
 		elseif( in_array( basename($_SERVER['SCRIPT_FILENAME']), array('term.php','edit-tags.php') ) ){
 		
@@ -1459,12 +1459,16 @@ class Language_Switcher {
 			
 			$language_switcher = $this->sanitize_language_switcher($_REQUEST['language_switcher']);
 			
-			update_term_meta($term_id,'language_switcher',$language_switcher);
-
 			if( !empty($language_switcher['main']) ){
 			
-				update_term_meta($term_id,$this->_base . 'main_language',$language_switcher['main']);
+                $main_lang = $language_switcher['main'];
+            
+                $language_switcher['urls'][$main_lang] = apply_filters('lsw_sanitize_link',get_term_link($term_id));
+            
+				update_term_meta($term_id,$this->_base . 'main_language',$main_lang);
 			}
+            
+            update_term_meta($term_id,'language_switcher',$language_switcher);
 		}
 		
 		do_action('lsw_taxonomy_edited',$term_id);
@@ -1475,14 +1479,18 @@ class Language_Switcher {
 		if( isset($_REQUEST['language_switcher']) && is_array($_REQUEST['language_switcher']) ){
 			
 			$language_switcher = $this->sanitize_language_switcher($_REQUEST['language_switcher']);
-
-			update_post_meta($post_id,$this->_base . 'language_switcher',$language_switcher);
-			
+            
 			if( !empty($language_switcher['main']) ){
 
-				update_post_meta($post_id,$this->_base . 'main_language',$language_switcher['main']);
-			}
+                $main_lang = $language_switcher['main'];
+                
+                $language_switcher['urls'][$main_lang] = apply_filters('lsw_sanitize_link',get_permalink($post_id));
+                
+				update_post_meta($post_id,$this->_base . 'main_language',$main_lang);
+
+            }
 			
+			update_post_meta($post_id,$this->_base . 'language_switcher',$language_switcher);
 		}
 		
 		do_action('lsw_post_type_edited',$post_id);

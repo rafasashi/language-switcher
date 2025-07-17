@@ -292,7 +292,7 @@ class Language_Switcher_Admin_API {
 									$html .= '<input id="' . esc_attr( $field['id'] ) . '_main_' . $iso . '" class="' . esc_attr( $field['id'] ) . '_main" type="radio" name="' . esc_attr( $option_name ) . '[main]" value="' . $iso . '"' . ( $data['main'] == $iso ? ' checked="checked"' : '' ) . ' />' . "\n";										
 									
 									$html .= '<div style="margin-bottom:2px;width:90%;display: inline-block;">' . $language['full'] . '</div>';
-
+                                    
 									$html .= '<input style="width:90%;margin-left:25px;" id="' . esc_attr( $field['id'] ) . '_url_' . $iso . '" type="text" name="' . esc_attr( $option_name ) . '[urls]['.$iso.']" placeholder="http://" value="' . $value . '"'.( $data['main'] == $iso ? ' disabled="disabled"' : '' ).'/>' . "\n";
 
 								$html .= '</div>';
@@ -591,7 +591,7 @@ class Language_Switcher_Admin_API {
 	 * @return void
 	 */
 	public function save_meta_boxes ( $post_id = 0 ) {
-
+        
 		if( !$post_id || isset($_POST['_inline_edit']) || isset($_GET['bulk_edit']) ) return;
 
 		$post_type = get_post_type( $post_id );
