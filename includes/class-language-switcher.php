@@ -1524,7 +1524,7 @@ class Language_Switcher {
 		return home_url(add_query_arg( $_SERVER['QUERY_STRING'], '', $wp->request));
 	}
 	
-	public function get_language_urls($languages){
+	public function get_language_urls($languages,$is_shortcode=false){
 		
 		$urls = array();
 		
@@ -1546,14 +1546,21 @@ class Language_Switcher {
 					}
 					elseif( $language['main'] != $iso ){
 						
-						if( !empty($default_urls[$iso]) ){
-						
-							$urls[$iso]['url'] = $default_urls[$iso];
-						}
-						else{
+						if( !$is_shortcode ){
 							
-							$urls[$iso]['url'] = add_query_arg( array('lang' => $iso), $this->get_current_url() );
-						}
+                            if( !empty($default_urls[$iso]) ){
+                            
+                                $urls[$iso]['url'] = $default_urls[$iso];
+                            }
+                            else{
+                            
+                                $urls[$iso]['url'] = add_query_arg( array('lang' => $iso), $this->get_current_url() );
+                            }
+                        }
+                        else{
+                            
+                            $urls[$iso]['url'] = false;
+                        }
 					}
 					else{
 						
@@ -1572,10 +1579,10 @@ class Language_Switcher {
 		$show 		= ( !empty($atts['show']) ? $atts['show'] : 'title_option' );
 		$icon 		= ( !empty($atts['icon']) ? $atts['icon'] : '' );
 		
-		return $this->get_language_switcher( $display, $show, $icon );
+		return $this->get_language_switcher( $display, $show, $icon, true );
 	}
 		
-	public function get_language_switcher( $display = 'button', $show = 'title_option', $icon = '' ){
+	public function get_language_switcher( $display = 'button', $show = 'title_option', $icon = '', $is_shortcode = false ){
 		
 		// get languages
 		
@@ -1583,7 +1590,7 @@ class Language_Switcher {
 		
 		// get language urls
 		
-		$urls = $this->get_language_urls($languages);
+		$urls = $this->get_language_urls($languages, $is_shortcode);
 		
 		// current language
 		
@@ -1628,11 +1635,14 @@ class Language_Switcher {
 				
 					foreach( $urls as $iso => $data ){
 						
-						$switcher .= '<li'.( $language['main'] == $iso ? ' class="lsw-active"' : '' ).'>';
-							
-							$switcher .= '<a onclick="setLang(\''.$iso.'\');" href="'.esc_url($data['url']).'">'.$data['language'].'</a>';
-							
-						$switcher .= '</li>';
+                        if( !empty($data['url']) ){
+                            
+                            $switcher .= '<li'.( $language['main'] == $iso ? ' class="lsw-active"' : '' ).'>';
+                                
+                                $switcher .= '<a onclick="setLang(\''.$iso.'\');" href="'.esc_url($data['url']).'">'.$data['language'].'</a>';
+                                
+                            $switcher .= '</li>';
+                        }
 					}
 					
 				$switcher .= '</ul>';
@@ -1668,12 +1678,15 @@ class Language_Switcher {
 				$html .= '<ul class="jq-dropdown-menu">';
 				
 					foreach( $urls as $iso => $data ){
+                    
+                        if( !empty($data['url']) ){
 
-						$html .= '<li'.( $language['main'] == $iso ? ' class="lsw-active"' : '' ).'>';
-							
-							$html .= '<a onclick="setLang(\''.$iso.'\');" href="' . esc_url($data['url']) . '">' . $data['language'] . '</a>';
-						
-						$html .= '</li>';
+                            $html .= '<li'.( $language['main'] == $iso ? ' class="lsw-active"' : '' ).'>';
+                                
+                                $html .= '<a onclick="setLang(\''.$iso.'\');" href="' . esc_url($data['url']) . '">' . $data['language'] . '</a>';
+                            
+                            $html .= '</li>';
+                        }
 					}
 					
 				$html .= '</ul>';
