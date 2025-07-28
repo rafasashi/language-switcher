@@ -319,26 +319,29 @@ class Language_Switcher {
 	
 	public function normalize_url($url,$current_url) {
 		
-		$proto = ( is_ssl() ? 'https://' : 'http://' );	
+        if( is_string($url) && !empty($url) ){
+            
+            $proto = ( is_ssl() ? 'https://' : 'http://' );	
 
-		if( $url[0] == '/' ){
+            if( $url[0] == '/' ){
 
-			$url = home_url( $url );
-		}
-		else{
-			
-			$u = parse_url($url);
-			
-			if( empty($u['host']) ){
-				
-				$url = $current_url . '/' . $url;
-			}
-			elseif( empty($u['scheme']) ){
-				
-				$url = $proto . $url;
-			}
-		}
-		
+                $url = home_url( $url );
+            }
+            else{
+                
+                $u = parse_url($url);
+                
+                if( empty($u['host']) ){
+                    
+                    $url = $current_url . '/' . $url;
+                }
+                elseif( empty($u['scheme']) ){
+                    
+                    $url = $proto . $url;
+                }
+            }
+        }
+        
 		return $url;
 	}
 	
