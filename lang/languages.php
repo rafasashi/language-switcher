@@ -310,11 +310,11 @@
 			'code' => 'de-ch',
 			'locale' => 'de_CH'
 		),
-		'el' => array(
-			'name' => 'Greek',
+		'gr' => array(
+			'name'  => 'Greek',
 			'native' => 'Ελληνικά',
-			'code' => 'el',
-			'locale' => 'el'
+			'code' => 'gr',
+			'locale' => 'gr'
 		),
 		'gn' => array(
 			'name' => 'Guaraní',

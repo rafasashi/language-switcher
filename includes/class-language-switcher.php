@@ -1333,7 +1333,7 @@ class Language_Switcher {
 		
 		if( is_null($this->active_post_types) ){
 
-			$valid = get_option( $this->_base . 'language_post_types');
+			$valid = get_option( $this->_base . 'language_post_types', array());
 			
 			if( !empty($valid) && is_array($valid) ){
 				
