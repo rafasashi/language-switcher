@@ -1303,7 +1303,7 @@ class Language_Switcher {
 			unset($languages);
 		}
 		
-		return $this->languages;
+		return (array) $this->languages;
 	}
 	
 	public function get_active_taxonomies(){
@@ -1326,7 +1326,7 @@ class Language_Switcher {
 			$this->active_taxonomies = $valid;
 		}
 		
-		return $this->active_taxonomies;
+		return (array) $this->active_taxonomies;
 	}
 	
 	public function get_active_post_types(){
@@ -1349,7 +1349,7 @@ class Language_Switcher {
 			$this->active_post_types = $valid;
 		}
 		
-		return $this->active_post_types;
+		return (array) $this->active_post_types;
 	}
 	
 	public function get_active_languages(){
@@ -1371,7 +1371,7 @@ class Language_Switcher {
 			}
 		}
 		
-		return $this->active_languages;
+		return (array) $this->active_languages;
 	}
 	
 	public function is_valid_taxonomy($taxonomy){
