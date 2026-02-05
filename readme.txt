@@ -3,8 +3,8 @@ Contributors: rafasashi
 Tags: language switcher, languages, internationalisation, internationalization, language
 Donate link: https://code.recuweb.com/get/language-switcher-everywhere/
 Requires at least: 4.6
-Tested up to: 6.8
-Stable tag: 3.8.8
+Tested up to: 6.9
+Stable tag: 3.8.9
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
