@@ -757,103 +757,75 @@ class Language_Switcher {
         return $query;
     }
 		
-	public function query_language_posts( $query ) {
+	public function query_language_taxonomies( $args, $taxonomies ){
         
-        if( $query->is_main_query() ){
-            
-            $has_language = true;
-            
-            if( empty($_REQUEST['lang']) 
-                && !is_archive() 
-                && !is_home() 
-                && ( !is_object($query) 
-                    || empty($query->query) 
-                    || !isset($query->query['post_type']) 
-                    || !is_array($this->get_active_post_types()) 
-                    || !in_array($query->query['post_type'],$this->get_active_post_types() )
-                )
-            ){
-                $has_language = false;
-            }
-            
-            if($has_language){
-                
-                $language = array();
-                $default_lang = $this->get_default_language();
-                    
-                if( $query->is_category() || $query->is_tag() || $query->is_tax() ){
-                    
-                    $queried = get_queried_object();
-                    
-                    if( !empty($queried->term_id) ){
-                        
-                        if( !$language = get_term_meta( $queried->term_id, 'language_switcher' ,true ) ){
-                            $language = array();
-                        }
-                        
-                        $language['default'] = $default_lang;
+        $has_language = false;
+        
+        if( !empty($taxonomies) ){
+            $active_taxonomies = $this->get_active_taxonomies();
+        
+            foreach( $taxonomies as $taxonomy){
+                if( is_string($taxonomy) && is_array($active_taxonomies) ){
+                    if( in_array( $taxonomy, $active_taxonomies ) ){
+                        $has_language = true;
+                        break; // Found one, no need to keep looping
                     }
-                }
-                elseif( $query->is_archive() || is_home() ){
-                    
-                    if( !empty($_REQUEST['lang']) ){
-                        
-                        $language['main'] = sanitize_title($_REQUEST['lang']);
-                    }
-                    else{
-                        
-                        $language['main'] = $default_lang;
-                    }
-                    
-                    $language['default'] = $default_lang;
-                }
-                
-                if( !empty($language['main']) ){
-                    
-                    $meta_query = (array) $query->get( 'meta_query' );
-
-                    if( $language['main'] == $language['default'] ){
-                        
-                        $lang_query = array(
-                            'relation' => 'OR',
-                            array(
-                                'key'     => $this->_base . 'main_language',
-                                'value'   => '',
-                                'compare' => 'NOT EXISTS',
-                            ),
-                            array(
-                                'key'     => $this->_base . 'main_language',
-                                'value'   => $language['main'],
-                                'compare' => 'LIKE',
-                            ),
-                        );
-                    }
-                    else{
-                        
-                        $lang_query = array(
-                            array(
-                                'key'     => $this->_base . 'main_language',
-                                'value'   => $language['main'],
-                                'compare' => 'LIKE',
-                            ),
-                        );
-                    }
-
-                   $meta_query[] = $lang_query;
-
-                    if ( count( $meta_query ) > 1 ) {
-                        
-                        $meta_query['relation'] = 'AND';
-                    }
-
-                    $query->set( 'meta_query', $meta_query );
                 }
             }
         }
         
-        return $query;
+        if( $has_language ){
+            
+            $default_lang = $this->get_default_language();
+            
+            if( !empty($_COOKIE[$this->_prefix . 'm']) ){
+                
+                $lang_loc = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
+                $lang_loc = explode('-', $lang_loc);
+                $lang     = $lang_loc[0];
+                
+                $meta_query = isset($args['meta_query']) ? (array) $args['meta_query'] : array();
+
+                if( $_COOKIE[$this->_prefix . 'm'] != $default_lang ){
+                    // Strict language filter
+                    $lang_filter = array(
+                        'key'     => $this->_base . 'main_language',
+                        'value'   => $lang,
+                        'compare' => '=' 
+                    );
+                }
+                else{
+                    
+                    $lang_filter = array(
+                        'relation' => 'OR',
+                        array(
+                            'key'     => $this->_base . 'main_language',
+                            'compare' => 'NOT EXISTS'
+                        ),
+                        array(
+                            'key'     => $this->_base . 'main_language',
+                            'value'   => $lang,
+                            'compare' => '='
+                        )
+                    );
+                }
+
+                $meta_query[] = $lang_filter;
+
+                if ( count($meta_query) > 1 ) {
+                    
+                    $meta_query['relation'] = 'AND';
+                }
+
+                $args['meta_query'] = $meta_query;
+
+                unset($args['meta_key'], $args['meta_value']);
+            }
+        }
+        
+        return $args;
     }
-	
+    
 	public function query_language_comments( $query ) {
         
         $default_lang = $this->get_default_language();
