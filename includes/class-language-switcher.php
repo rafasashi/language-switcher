@@ -672,30 +672,113 @@ class Language_Switcher {
 		return $this->language;
 	}
 	
-	public function query_language_posts( $query ){
+	public function query_language_posts( $query ) {
+
+        if ( $query->is_main_query() ) {
+
+            $has_language = true;
+
+            if ( empty( $_REQUEST['lang'] ) 
+                && ! is_archive() 
+                && ! is_home() 
+                && ( ! is_object( $query ) 
+                    || empty( $query->query ) 
+                    || ! isset( $query->query['post_type'] ) 
+                    || ! is_array( $this->get_active_post_types() ) 
+                    || ! in_array( $query->query['post_type'], $this->get_active_post_types() )
+                )
+            ) {
+                $has_language = false;
+            }
+
+            if ( $has_language ) {
+
+                $language     = array();
+                $default_lang = $this->get_default_language();
+
+                if ( $query->is_category() || $query->is_tag() || $query->is_tax() ) {
+                    $queried = get_queried_object();
+                    if ( ! empty( $queried->term_id ) ) {
+                        if ( ! $language = get_term_meta( $queried->term_id, 'language_switcher', true ) ) {
+                            $language = array();
+                        }
+                        $language['default'] = $default_lang;
+                    }
+                } elseif ( $query->is_archive() || is_home() ) {
+                    if ( ! empty( $_REQUEST['lang'] ) ) {
+                        $language['main'] = sanitize_title( $_REQUEST['lang'] );
+                    } else {
+                        $language['main'] = $default_lang;
+                    }
+                    $language['default'] = $default_lang;
+                }
+
+                $meta_query = (array) $query->get( 'meta_query' );
+
+                if ( ! empty( $language['main'] ) ) {
+                    
+                    if ( $language['main'] == $language['default'] ) {
+                        
+                        $meta_query[] = array(
+                            'relation' => 'OR',
+                            array(
+                                'key'     => $this->_base . 'main_language',
+                                'value'   => '',
+                                'compare' => 'NOT EXISTS',
+                            ),
+                            array(
+                                'key'     => $this->_base . 'main_language',
+                                'value'   => $language['main'],
+                                'compare' => 'LIKE',
+                            ),
+                        );
+                    } 
+                    else {
+                        
+                        $meta_query[] = array(
+                            array(
+                                'key'     => $this->_base . 'main_language',
+                                'value'   => $language['main'],
+                                'compare' => 'LIKE',
+                            ),
+                        );
+                    }
+                }
+
+                if ( count( $meta_query ) > 1 ) {
+                    
+                    $meta_query['relation'] = 'AND';
+                }
+
+                $query->set( 'meta_query', $meta_query );
+            }
+        }
+
+        return $query;
+    }
 		
+	public function query_language_posts( $query ) {
+        
         if( $query->is_main_query() ){
             
             $has_language = true;
             
             if( empty($_REQUEST['lang']) 
-                && 	 !is_archive() 
-                && 	 !is_home() 
+                && !is_archive() 
+                && !is_home() 
                 && ( !is_object($query) 
-                    || 	empty($query->query) 
-                    || 	!isset($query->query['post_type']) 
-                    || 	!is_array($this->get_active_post_types()) 
-                    || 	!in_array($query->query['post_type'],$this->get_active_post_types() )
+                    || empty($query->query) 
+                    || !isset($query->query['post_type']) 
+                    || !is_array($this->get_active_post_types()) 
+                    || !in_array($query->query['post_type'],$this->get_active_post_types() )
                 )
             ){
-                
                 $has_language = false;
             }
             
             if($has_language){
                 
                 $language = array();
-                
                 $default_lang = $this->get_default_language();
                     
                 if( $query->is_category() || $query->is_tag() || $query->is_tax() ){
@@ -705,16 +788,13 @@ class Language_Switcher {
                     if( !empty($queried->term_id) ){
                         
                         if( !$language = get_term_meta( $queried->term_id, 'language_switcher' ,true ) ){
-                            
                             $language = array();
                         }
-                
+                        
                         $language['default'] = $default_lang;
                     }
                 }
                 elseif( $query->is_archive() || is_home() ){
-                    
-                    //date archive
                     
                     if( !empty($_REQUEST['lang']) ){
                         
@@ -730,151 +810,111 @@ class Language_Switcher {
                 
                 if( !empty($language['main']) ){
                     
-                    if( $language['main'] == $language['default'] ){
+                    $meta_query = (array) $query->get( 'meta_query' );
 
-                        $query->set( 'meta_query', array(
-                            'relation'		=> 'OR',
+                    if( $language['main'] == $language['default'] ){
+                        
+                        $lang_query = array(
+                            'relation' => 'OR',
                             array(
-                                'key' 		=> $this->_base . 'main_language',
-                                'value' 	=> '',
-                                'compare' 	=> 'NOT EXISTS',
+                                'key'     => $this->_base . 'main_language',
+                                'value'   => '',
+                                'compare' => 'NOT EXISTS',
                             ),
                             array(
-                                'key' 		=> $this->_base . 'main_language',
-                                'value' 	=> $language['main'],
-                                'compare' 	=> 'LIKE',
+                                'key'     => $this->_base . 'main_language',
+                                'value'   => $language['main'],
+                                'compare' => 'LIKE',
                             ),
-                        ));
+                        );
                     }
                     else{
                         
-                        $query->set( 'meta_query', array(
+                        $lang_query = array(
                             array(
-                                'key' 		=> $this->_base . 'main_language',
-                                'value' 	=> $language['main'],
-                                'compare' 	=> 'LIKE',
+                                'key'     => $this->_base . 'main_language',
+                                'value'   => $language['main'],
+                                'compare' => 'LIKE',
                             ),
-                        ));
+                        );
                     }
+
+                   $meta_query[] = $lang_query;
+
+                    if ( count( $meta_query ) > 1 ) {
+                        
+                        $meta_query['relation'] = 'AND';
+                    }
+
+                    $query->set( 'meta_query', $meta_query );
                 }
             }
         }
         
-		return $query;
-	}
-		
-	public function query_language_taxonomies( $args, $taxonomies ){
-		
-		$has_language = false;
-		
-		if( !empty($taxonomies) ){
-			
-			$active_taxonomies = $this->get_active_taxonomies();
-		
-			foreach( $taxonomies as $taxonomy){
-
-				if( is_string($taxonomy) && is_array($active_taxonomies) ){
-				
-					if( in_array( $taxonomy, $active_taxonomies ) ){
-						
-						$has_language = true;
-					}
-				}
-			}
-		}
-		
-		if( $has_language ){
-		
-			$language = '';
-			
-			$default_lang = $this->get_default_language();
-			
-			if( !empty($_COOKIE[$this->_prefix . 'm']) ){
-				
-				$lang_loc = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
-				
-				$lang_loc = explode('-',$lang_loc);
-				
-				$lang = $lang_loc[0];
-				
-				if( $_COOKIE[$this->_prefix . 'm'] != $default_lang ){
-					
-					$args['meta_key'] 	= $this->_base . 'main_language';
-					$args['meta_value'] = $lang;					
-				}
-				else{
-
-					$args['meta_query'] = array(
-					   'relation' => 'OR',
-						array(
-							'key' 		=> $this->_base . 'main_language',
-							'compare' 	=> 'NOT EXISTS'
-						),
-						array(
-						 'key' 		=> $this->_base . 'main_language',
-						 'value' 	=> $lang,
-						)
-					);
-				}
-			}
-		}
-		
-		return $args;
-	}
+        return $query;
+    }
 	
-	public function query_language_comments( $query ){
-		
-		$default_lang = $this->get_default_language();
-		
-		$language = array(
-			
-			'main'		=> $default_lang,
-			'default'	=> $default_lang,
-		);
-		
-		if( !empty($_COOKIE[$this->_prefix . 'm']) ){
-				
-			$lang_loc = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
-			
-			$lang_loc = explode('-',$lang_loc);
-			
-			$lang = $lang_loc[0];
-			
-			$language['main'] = $lang;
-			$language['default'] = ( !empty($_COOKIE[$this->_prefix . 'd']) ? sanitize_text_field($_COOKIE[$this->_prefix . 'd']) : $default_lang );
-		}	
-		
-		if( $language['main'] == $language['default'] ){
+	public function query_language_comments( $query ) {
+        
+        $default_lang = $this->get_default_language();
+        
+        $language = array(
+            'main'    => $default_lang,
+            'default' => $default_lang,
+        );
+        
+        if( !empty($_COOKIE[$this->_prefix . 'm']) ){
+            
+            $lang_loc = sanitize_text_field($_COOKIE[$this->_prefix . 'm']);
+            $lang_loc = explode('-', $lang_loc);
+            $lang = $lang_loc[0];
+            
+            $language['main'] = $lang;
+            $language['default'] = ( !empty($_COOKIE[$this->_prefix . 'd']) ? sanitize_text_field($_COOKIE[$this->_prefix . 'd']) : $default_lang );
+        }   
+        
+        $meta_query = isset($query->query_vars['meta_query']) ? (array) $query->query_vars['meta_query'] : array();
+        
+        if( $language['main'] == $language['default'] ){
+            
+            $lang_filter = array(
+            
+                'relation' => 'OR',
+                array(
+                    'key'     => $this->_base . 'main_language',
+                    'value'   => '',
+                    'compare' => 'NOT EXISTS',
+                ),
+                array(
+                    'key'     => $this->_base . 'main_language',
+                    'value'   => $language['main'],
+                    'compare' => 'LIKE',
+                ),
+            );
+        }
+        else{
+            
+            $lang_filter = array(
+                array(
+                    'key'     => $this->_base . 'main_language',
+                    'value'   => $language['main'],
+                    'compare' => 'LIKE',
+                ),
+            );
+        }
 
-			$query->query_vars['meta_query'] = array(
-				'relation'		=> 'OR',
-				array(
-					'key' 		=> $this->_base . 'main_language',
-					'value' 	=> '',
-					'compare' 	=> 'NOT EXISTS',
-				),
-				array(
-					'key' 		=> $this->_base . 'main_language',
-					'value' 	=> $language['main'],
-					'compare' 	=> 'LIKE',
-				),
-			);
-		}
-		else{
-			
-			$query->query_vars['meta_query'] = array(
-				array(
-					'key' 		=> $this->_base . 'main_language',
-					'value' 	=> $language['main'],
-					'compare' 	=> 'LIKE',
-				),
-			);
-		}
-		
-		$query->meta_query->parse_query_vars( $query->query_vars );
+        $meta_query[] = $lang_filter;
 
-		return $query;
-	}
+        if ( count($meta_query) > 1 ) {
+            
+            $meta_query['relation'] = 'AND';
+        }
+
+        $query->query_vars['meta_query'] = $meta_query;
+        $query->meta_query->parse_query_vars( $query->query_vars );
+
+        return $query;
+    }
 	
 	public function get_month_link($monthlink, $year, $month){
 		
