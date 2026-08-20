@@ -1819,14 +1819,18 @@ class Language_Switcher {
 		
 		if( $urls = $this->get_language_urls($languages) ){
 			
-			$default_lang = apply_filters('lsw_hreflang_x_default',$this->get_default_language(true));
+			$default_lang = apply_filters('lsw_hreflang_x_default', $this->get_default_language(true));
 			
-			if( !empty($urls[$default_lang]['url']) ){
+			if( !empty($urls[$default_lang]['url']) && !is_wp_error($urls[$default_lang]['url']) ){
 				
 				echo '<link rel="alternate" href="' . esc_url($urls[$default_lang]['url']) . '" hreflang="x-default" />' . PHP_EOL;
 			}
 			
 			foreach( $urls as $iso => $data ){
+				
+				if( empty($data['url']) || is_wp_error($data['url']) ){
+					continue;
+				}
 				
 				echo '<link rel="alternate" href="' . esc_url($data['url']) . '" hreflang="' . esc_attr($iso) . '" />' . PHP_EOL;
 			}
